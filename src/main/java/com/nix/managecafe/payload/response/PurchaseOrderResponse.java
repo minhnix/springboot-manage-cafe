@@ -13,7 +13,7 @@ import java.util.List;
 @Setter
 public class PurchaseOrderResponse {
     private Long id;
-    private List<PurchaseOrderDetailResponse> orderDetails;
+    private List<PurchaseOrderDetailResponse> purchaseOrderDetails;
     private Supplier supplier;
     private PaymentType paymentType;
     private Long totalCost;

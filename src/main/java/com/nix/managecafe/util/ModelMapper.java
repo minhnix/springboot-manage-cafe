@@ -4,6 +4,8 @@ import com.nix.managecafe.model.*;
 import com.nix.managecafe.payload.response.UserSummary;
 import com.nix.managecafe.payload.response.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
@@ -43,15 +45,15 @@ public class ModelMapper {
         purchaseOrderResponse.setCreatedAt(purchaseOrder.getCreatedAt());
         purchaseOrderResponse.setSupplier(purchaseOrder.getSupplier());
         purchaseOrderResponse.setPaymentType(purchaseOrder.getPayment());
-        AtomicReference<Long> totalCost = new AtomicReference<>(0L);
-        purchaseOrderResponse.setOrderDetails(purchaseOrder.getPurchaseOrderDetails().stream().map(
-                purchaseOrderDetail -> {
-                    PurchaseOrderDetailResponse detail = ModelMapper.mapPurchaseOrderDetailToPurchaseOrderDetailResponse(purchaseOrderDetail);
-                    totalCost.updateAndGet(v -> v + detail.getTotalCost());
-                    return detail;
-                }
-        ).collect(Collectors.toList()));
-        purchaseOrderResponse.setTotalCost(totalCost.get());
+        long totalCost = 0;
+        List<PurchaseOrderDetailResponse> purchaseOrderDetailResponses = new ArrayList<>();
+        for (PurchaseOrderDetail purchaseOrderDetail : purchaseOrder.getPurchaseOrderDetails()) {
+            PurchaseOrderDetailResponse detail = ModelMapper.mapPurchaseOrderDetailToPurchaseOrderDetailResponse(purchaseOrderDetail);
+            totalCost += detail.getTotalCost();
+            purchaseOrderDetailResponses.add(detail);
+        }
+        purchaseOrderResponse.setPurchaseOrderDetails(purchaseOrderDetailResponses);
+        purchaseOrderResponse.setTotalCost(totalCost);
         return purchaseOrderResponse;
     }
 
@@ -67,7 +69,7 @@ public class ModelMapper {
         return orderDetailResponse;
     }
 
-    private static Long getCostBySize(Long cost, String size) {
+    private static long getCostBySize(long cost, String size) {
         return switch (size) {
             case "SIZE_M" -> cost + AppConstants.PRICE_SIZE_M;
             case "SIZE_L" -> cost + AppConstants.PRICE_SIZE_L;
@@ -85,18 +87,18 @@ public class ModelMapper {
         orderResponse.setCustomer(new UserResponse(order.getCustomer().getId(), order.getCustomer().getUsername(), order.getCustomer().getFirstname(), order.getCustomer().getLastname()));
         if (order.getStaff() != null)
             orderResponse.setStaff(new UserResponse(order.getStaff().getId(), order.getStaff().getUsername(), order.getStaff().getFirstname(), order.getStaff().getLastname()));
-        AtomicReference<Long> subTotalCost = new AtomicReference<>(0L);
         orderResponse.setDeliveryCost(order.getDeliveryCost());
         orderResponse.setAmountDiscount(order.getAmountDiscount());
-        orderResponse.setOrderDetails(order.getOrderDetails().stream().map(
-                orderDetail -> {
-                    OrderDetailResponse orderDetailResponse = ModelMapper.mapOrderDetailToOrderDetailResponse(orderDetail);
-                    subTotalCost.updateAndGet(v -> v + orderDetailResponse.getTotalCost());
-                    return orderDetailResponse;
-                }
-        ).collect(Collectors.toList()));
-        orderResponse.setSubTotalCost(subTotalCost.get());
-        orderResponse.setTotalCost(subTotalCost.get() + order.getDeliveryCost() - order.getAmountDiscount());
+        long subTotalCost = 0;
+        List<OrderDetailResponse> orderDetailResponses = new ArrayList<>();
+        for (OrderDetail orderDetail : order.getOrderDetails()) {
+            OrderDetailResponse orderDetailResponse = ModelMapper.mapOrderDetailToOrderDetailResponse(orderDetail);
+            subTotalCost += orderDetailResponse.getTotalCost();
+            orderDetailResponses.add(orderDetailResponse);
+        }
+        orderResponse.setOrderDetails(orderDetailResponses);
+        orderResponse.setSubTotalCost(subTotalCost);
+        orderResponse.setTotalCost(subTotalCost + order.getDeliveryCost() - order.getAmountDiscount());
         orderResponse.setCreatedAt(order.getCreatedAt());
         return orderResponse;
     }

@@ -4,7 +4,10 @@ import com.nix.managecafe.exception.AppException;
 import com.nix.managecafe.exception.BadRequestException;
 import com.nix.managecafe.exception.ForbiddenException;
 import com.nix.managecafe.exception.ResourceNotFoundException;
-import com.nix.managecafe.model.*;
+import com.nix.managecafe.model.MenuDetail;
+import com.nix.managecafe.model.Order;
+import com.nix.managecafe.model.OrderDetail;
+import com.nix.managecafe.model.Warehouse;
 import com.nix.managecafe.model.enumname.RoleName;
 import com.nix.managecafe.model.enumname.StatusName;
 import com.nix.managecafe.payload.request.OrderDetailRequest;
@@ -178,7 +181,7 @@ public class OrderService {
                     List<MenuDetail> menuDetails = menuDetailRepo.findByMenuId(orderDetail.getMenu().getId());
                     menuDetails.forEach(
                             menuDetail -> {
-                                Long id = menuDetail.getProduct().getId();
+                                long id = menuDetail.getProduct().getId();
                                 if (productQuantity.containsKey(id)) {
                                     productQuantity.replace(id, productQuantity.get(id) + calculatorQuantity(orderDetail.getQuantity() * menuDetail.getQuantity(), orderDetail.getSize()));
                                 } else {
