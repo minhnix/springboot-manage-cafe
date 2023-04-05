@@ -106,6 +106,7 @@ public class ModelMapper {
         cartResponse.setMenu(cart.getMenu());
         cartResponse.setQuantity(cart.getQuantity());
         cartResponse.setId(cart.getId());
+        cartResponse.setDeleted(cart.getMenu().isDeleted());
         return cartResponse;
     }
 }

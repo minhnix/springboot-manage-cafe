@@ -10,4 +10,5 @@ public class CartResponse {
     private Long id;
     private Menu menu;
     private Long quantity;
+    private boolean deleted;
 }
