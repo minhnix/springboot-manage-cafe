@@ -1,6 +1,7 @@
 package com.nix.managecafe.model;
 
 import com.nix.managecafe.model.audit.DateAudit;
+import com.nix.managecafe.model.audit.UserAudit;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,7 +14,7 @@ import java.time.Instant;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Notification extends DateAudit{
+public class Notification extends UserAudit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

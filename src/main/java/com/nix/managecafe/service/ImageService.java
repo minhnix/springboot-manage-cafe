@@ -26,6 +26,7 @@ public class ImageService {
         }
         Files.copy(file.getInputStream(), Paths.get(filePath));
 
+        name = "http://localhost:8080/api/v1/images/" + name;
         return name;
     }
     public InputStream getResource(String fileName) throws FileNotFoundException {

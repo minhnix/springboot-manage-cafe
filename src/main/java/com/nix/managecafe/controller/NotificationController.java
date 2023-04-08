@@ -1,7 +1,10 @@
 package com.nix.managecafe.controller;
 
+import com.nix.managecafe.exception.AuthenticationException;
 import com.nix.managecafe.model.Notification;
 import com.nix.managecafe.payload.response.PagedResponse;
+import com.nix.managecafe.security.CurrentUser;
+import com.nix.managecafe.security.UserPrincipal;
 import com.nix.managecafe.service.NotificationService;
 import com.nix.managecafe.util.AppConstants;
 import org.aspectj.weaver.ast.Not;
@@ -12,6 +15,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+// TODO: Add current user
 public class NotificationController {
     private final NotificationService notificationService;
 
@@ -22,32 +26,36 @@ public class NotificationController {
         this.simpMessagingTemplate = simpMessagingTemplate;
     }
 
-    @GetMapping("/api/v1/users/{id}/notification")
+    @GetMapping("/api/v1/users/notification")
     public PagedResponse<Notification> getNotification(
-            @PathVariable("id") Long id,
             @RequestParam(value = "page", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) int page,
             @RequestParam(value = "size", defaultValue = AppConstants.DEFAULT_PAGE_SIZE) int size,
-            @RequestParam(value = "read", defaultValue = "False") boolean read
-    ) {
+            @RequestParam(value = "read", defaultValue = "False") boolean read,
+            @CurrentUser UserPrincipal userPrincipal
+            ) {
+        if (userPrincipal == null) throw new AuthenticationException("Full authentication to get resource");
         if (read) {
-            return notificationService.getNotificationsByToUser(page, size, id);
+            return notificationService.getNotificationsByToUser(page, size, userPrincipal.getId());
         } else {
-            return notificationService.getNotificationsByToUserNotRead(page, size, id);
+            return notificationService.getNotificationsByToUserNotRead(page, size, userPrincipal.getId());
         }
     }
 
     @PostMapping("/api/v1/notification")
-    public Notification pushNotification(@RequestBody Notification notification) {
+    public Notification pushNotification(@RequestBody Notification notification, @CurrentUser UserPrincipal userPrincipal) {
+        if (userPrincipal == null) throw new AuthenticationException("Full authentication to get resource");
         return notificationService.createNotification(notification);
     }
 
     @PutMapping("/api/v1/notification")
-    public void changeAllToRead(@RequestParam("userId") Long userId) {
-        notificationService.changeAllToRead(userId);
+    public void changeAllToRead(@CurrentUser UserPrincipal userPrincipal) {
+        if (userPrincipal == null) throw new AuthenticationException("Full authentication to get resource");
+        notificationService.changeAllToRead(userPrincipal.getId());
     }
     @PutMapping("/api/v1/notification/{id}")
-    public void changeNotificationToRead(@PathVariable("id") Long id) {
-        notificationService.changeToRead(id);
+    public void changeNotificationToRead(@PathVariable("id") Long id, @CurrentUser UserPrincipal userPrincipal) {
+        if (userPrincipal == null) throw new AuthenticationException("Full authentication to get resource");
+        notificationService.changeToRead(id, userPrincipal);
     }
 
     //user send to system

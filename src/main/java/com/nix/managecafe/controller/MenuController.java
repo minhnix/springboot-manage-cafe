@@ -88,7 +88,8 @@ public class MenuController {
     }
 
     @GetMapping("/search")
-    public List<Menu> searchByName(@RequestParam("q") String name) {
-        return menuService.searchByName(name);
+    public List<Menu> searchByName(@RequestParam(value = "q", defaultValue = "") String name,
+                                   @RequestParam(value = "cid", required = false) Long cid) {
+        return menuService.searchByName(name, cid);
     }
 }

@@ -150,7 +150,7 @@ public class MenuService {
         return menus;
     }
 
-    public List<Menu> searchByName(String name) {
+    public List<Menu> searchByName(String name, Long categoryId) {
         String[] names = name.split(" ");
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Menu> cq = cb.createQuery(Menu.class);
@@ -161,7 +161,12 @@ public class MenuService {
             predicates[i] = cb.like(root.get("name"), "%"+ names[i] +"%");
         }
         Predicate deleted = cb.equal(root.get("deleted"), false);
-        cq.select(root).where(cb.and(deleted), cb.or(predicates));
+        if (categoryId != null) {
+            Predicate haveCategoryId = cb.equal(root.get("category").get("id"), categoryId);
+            cq.select(root).where(cb.and(deleted, haveCategoryId), cb.or(predicates));
+        } else {
+            cq.select(root).where(cb.and(deleted), cb.or(predicates));
+        }
         TypedQuery<Menu> query = entityManager.createQuery(cq);
         return query.getResultList();
     }
