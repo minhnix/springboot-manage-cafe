@@ -4,6 +4,7 @@ import com.nix.managecafe.payload.response.ApiResponse;
 import com.nix.managecafe.payload.response.ImageResponse;
 import com.nix.managecafe.service.ImageService;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -35,6 +36,7 @@ public class ImageController {
     }
 
     @GetMapping(value = "/{imageName}", produces = MediaType.IMAGE_JPEG_VALUE)
+    @Cacheable("image")
     public ResponseEntity<?> getImage(@PathVariable("imageName") String imageName, HttpServletResponse httpServletResponse) {
         InputStream inputStream = null;
         try {
