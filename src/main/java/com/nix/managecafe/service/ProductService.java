@@ -55,10 +55,14 @@ public class ProductService {
 
     @CachePut("product")
     public Product update(Product product) {
-        if (productRepo.findById(product.getId()).isEmpty()) {
-            throw new ResourceNotFoundException("Product", "id", product.getId());
-        }
-        return productRepo.save(product);
+        Product existingProduct = productRepo.findById(product.getId()).orElseThrow(() -> new ResourceNotFoundException("Product", "id", product.getId()));
+        existingProduct.setName(product.getName());
+        existingProduct.setDescription(product.getDescription());
+        existingProduct.setCost(product.getCost());
+        existingProduct.setUnit(product.getUnit());
+        existingProduct.setImageUrl(product.getImageUrl());
+
+        return productRepo.save(existingProduct);
     }
     @CachePut("product")
     public Product partialUpdate(Product product) {
