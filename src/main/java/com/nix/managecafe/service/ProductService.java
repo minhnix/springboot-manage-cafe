@@ -5,8 +5,10 @@ import com.nix.managecafe.model.Menu;
 import com.nix.managecafe.model.Product;
 import com.nix.managecafe.model.Warehouse;
 import com.nix.managecafe.payload.response.PagedResponse;
+import com.nix.managecafe.payload.response.ProductResponse;
 import com.nix.managecafe.repository.ProductRepo;
 import com.nix.managecafe.repository.WarehouseRepo;
+import com.nix.managecafe.util.ModelMapper;
 import com.nix.managecafe.util.ValidatePageable;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
@@ -26,6 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(rollbackFor = {ResourceNotFoundException.class})
@@ -87,13 +90,13 @@ public class ProductService {
         productRepo.delete(product);
     }
 
-    public Product getOne(Long productId) {
+    public ProductResponse getOne(Long productId) {
         Product product = productRepo.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "id", productId));
-        return product;
+        return ModelMapper.mapProductToProductResponse(product);
     }
 
-    public PagedResponse<Product> getAll(int page, int size, String sortBy, String sortDir) {
+    public PagedResponse<ProductResponse> getAll(int page, int size, String sortBy, String sortDir) {
         ValidatePageable.invoke(page, size);
 
         Session session = entityManager.unwrap(Session.class);
@@ -103,9 +106,11 @@ public class ProductService {
         Sort sort = (sortDir.equalsIgnoreCase("des")) ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
         Pageable pageable = PageRequest.of(page, size, sort);
         Page<Product> products = productRepo.findAll(pageable);
-
         session.disableFilter("deletedProductFilter");
-        return new PagedResponse<>(products.getContent(), products.getNumber(),
+
+        List<ProductResponse> productResponses = products.getContent().stream().map(ModelMapper::mapProductToProductResponse).toList();
+
+        return new PagedResponse<>(productResponses, products.getNumber(),
                 products.getSize(), products.getTotalElements(), products.getTotalPages(), products.isLast());
     }
 

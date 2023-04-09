@@ -30,6 +30,8 @@ public class Product {
     private Long cost;
     @NotNull
     private String unit;
+    @OneToOne(mappedBy = "product", orphanRemoval = true)
+    private Warehouse warehouse;
     @JsonIgnore
     private boolean deleted = Boolean.FALSE;
 }
