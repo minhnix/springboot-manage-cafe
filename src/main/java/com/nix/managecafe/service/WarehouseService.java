@@ -5,6 +5,9 @@ import com.nix.managecafe.model.Warehouse;
 import com.nix.managecafe.payload.response.PagedResponse;
 import com.nix.managecafe.repository.WarehouseRepo;
 import com.nix.managecafe.util.ValidatePageable;
+import jakarta.persistence.EntityManager;
+import org.hibernate.Filter;
+import org.hibernate.Session;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -14,9 +17,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class WarehouseService {
     private final WarehouseRepo warehouseRepo;
+    private final EntityManager entityManager;
 
-    public WarehouseService(WarehouseRepo warehouseRepo) {
+    public WarehouseService(WarehouseRepo warehouseRepo, EntityManager entityManager) {
         this.warehouseRepo = warehouseRepo;
+        this.entityManager = entityManager;
     }
 
     public Warehouse create(Warehouse warehouse) {
@@ -60,9 +65,15 @@ public class WarehouseService {
     public PagedResponse<Warehouse> getAll(int page, int size, String sortBy, String sortDir) {
         ValidatePageable.invoke(page, size);
 
+        Session session = entityManager.unwrap(Session.class);
+        Filter filter = session.enableFilter("deletedWarehouseFilter");
+        filter.setParameter("isDeleted", false);
+
         Sort sort = (sortDir.equalsIgnoreCase("des")) ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
         Pageable pageable = PageRequest.of(page, size, sort);
         Page<Warehouse> warehouses = warehouseRepo.findAll(pageable);
+        session.disableFilter("deletedWarehouseFilter");
+
 
         return new PagedResponse<>(warehouses.getContent(), warehouses.getNumber(),
                 warehouses.getSize(), warehouses.getTotalElements(), warehouses.getTotalPages(), warehouses.isLast());
