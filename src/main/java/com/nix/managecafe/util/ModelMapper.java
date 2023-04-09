@@ -32,7 +32,11 @@ public class ModelMapper {
         productResponse.setId(product.getId());
         productResponse.setUnit(product.getUnit());
         productResponse.setName(product.getName());
-        productResponse.setQuantity(product.getWarehouse().getQuantity());
+        if (product.getWarehouse() == null) {
+            productResponse.setQuantity(0D);
+        } else {
+            productResponse.setQuantity(product.getWarehouse().getQuantity());
+        }
         productResponse.setCost(product.getCost());
         productResponse.setImageUrl(product.getImageUrl());
         return productResponse;
