@@ -27,6 +27,17 @@ public class ModelMapper {
         return new UserSummary(user.getId(), user.getUsername(), user.getEmail(), user.getRoles());
     }
 
+    public static ProductResponse mapProductToProductResponse(Product product) {
+        ProductResponse productResponse = new ProductResponse();
+        productResponse.setId(product.getId());
+        productResponse.setUnit(product.getUnit());
+        productResponse.setName(product.getName());
+        productResponse.setQuantity(product.getWarehouse().getQuantity());
+        productResponse.setCost(product.getCost());
+        productResponse.setImageUrl(product.getImageUrl());
+        return productResponse;
+    }
+
     public static PurchaseOrderDetailResponse mapPurchaseOrderDetailToPurchaseOrderDetailResponse(PurchaseOrderDetail detail) {
         PurchaseOrderDetailResponse response = new PurchaseOrderDetailResponse();
         response.setId(detail.getId());

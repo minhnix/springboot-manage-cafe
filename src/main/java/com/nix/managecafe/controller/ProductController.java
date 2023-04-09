@@ -4,6 +4,7 @@ import com.nix.managecafe.exception.BadRequestException;
 import com.nix.managecafe.model.Menu;
 import com.nix.managecafe.model.Product;
 import com.nix.managecafe.payload.response.PagedResponse;
+import com.nix.managecafe.payload.response.ProductResponse;
 import com.nix.managecafe.service.ProductService;
 import com.nix.managecafe.util.AppConstants;
 import jakarta.validation.Valid;
@@ -74,12 +75,12 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    public Product getOne(@PathVariable("id") Long id) {
+    public ProductResponse getOne(@PathVariable("id") Long id) {
         return productService.getOne(id);
     }
 
     @GetMapping
-    public PagedResponse<Product> getAll(
+    public PagedResponse<ProductResponse> getAll(
             @RequestParam(value = "page", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) int page,
             @RequestParam(value = "size", defaultValue = AppConstants.DEFAULT_PAGE_SIZE) int size,
             @RequestParam(value = "sortBy", defaultValue = AppConstants.SORT_BY_ID, required = false) String sortBy,
