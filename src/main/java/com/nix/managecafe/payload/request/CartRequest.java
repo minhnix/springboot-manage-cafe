@@ -8,4 +8,5 @@ import lombok.Setter;
 public class CartRequest {
     private Long menuId;
     private Long quantity;
+    private String size;
 }

@@ -120,10 +120,14 @@ public class ModelMapper {
 
     public static CartResponse mapCartToCartResponse(Cart cart) {
         CartResponse cartResponse = new CartResponse();
-        cartResponse.setMenu(cart.getMenu());
+        cartResponse.setName(cart.getMenu().getName());
         cartResponse.setQuantity(cart.getQuantity());
         cartResponse.setId(cart.getId());
+        cartResponse.setSize(cart.getSize());
         cartResponse.setDeleted(cart.getMenu().isDeleted());
+        cartResponse.setImageUrl(cart.getMenu().getImageUrl());
+        cartResponse.setMenuId(cart.getMenu().getId());
+        cartResponse.setTotalCost(cart.getQuantity()*getCostBySize(cart.getMenu().getCost(), cartResponse.getSize()));
         return cartResponse;
     }
 }

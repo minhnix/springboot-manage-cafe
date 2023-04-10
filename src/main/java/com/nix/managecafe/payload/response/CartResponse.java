@@ -8,7 +8,11 @@ import lombok.Setter;
 @Setter
 public class CartResponse {
     private Long id;
-    private Menu menu;
+    private String name;
+    private Long menuId;
     private Long quantity;
+    private String imageUrl;
+    private String size;
+    private Long totalCost;
     private boolean deleted;
 }

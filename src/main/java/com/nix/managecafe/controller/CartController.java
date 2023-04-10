@@ -35,13 +35,13 @@ public class CartController {
     @PostMapping
     public CartResponse createOrUpdateCartItem(@CurrentUser UserPrincipal userPrincipal, @RequestBody CartRequest cartRequest) {
         if (userPrincipal == null) throw new AuthenticationException("Full authentication to get resource");
-        return cartService.createOrUpdateCartItem(userPrincipal.getUser(), cartRequest.getMenuId(), cartRequest.getQuantity());
+        return cartService.createOrUpdateCartItem(userPrincipal.getUser(), cartRequest);
     }
 
     @PutMapping("/{id}")
-    public void updateCart(@PathVariable("id") Long id, @RequestBody CartRequest cartRequest, @CurrentUser UserPrincipal currentUser) {
+    public CartResponse updateCart(@PathVariable("id") Long id, @RequestBody CartRequest cartRequest, @CurrentUser UserPrincipal currentUser) {
         if (currentUser == null) throw new AuthenticationException("Full authentication to get resource");
-        cartService.updateCart(id, cartRequest.getQuantity(), currentUser);
+        return cartService.updateCart(id, cartRequest.getQuantity(), currentUser);
     }
 
     @DeleteMapping("/{id}")

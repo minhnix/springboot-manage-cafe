@@ -18,4 +18,5 @@ public class Cart {
     @ManyToOne
     private Menu menu;
     private Long quantity;
+    private String size;
 }

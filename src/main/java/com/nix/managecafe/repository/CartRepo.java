@@ -13,7 +13,7 @@ import java.util.Optional;
 public interface CartRepo extends JpaRepository<Cart, Long> {
     List<Cart> findAllByUser(User user);
     Optional<Cart> findById(Long id);
-    Optional<Cart> findByUserIdAndMenuId(Long userId, Long menuId);
+    Optional<Cart> findByUserIdAndMenuIdAndSize(Long userId, Long menuId, String size);
     void deleteByUserId(Long userId);
     int countByUserId(Long userId);
 }
