@@ -2,6 +2,7 @@ package com.nix.managecafe.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -30,7 +31,7 @@ public class Product {
     private Long cost;
     @NotNull
     private String unit;
-    @OneToOne(mappedBy = "product", orphanRemoval = true)
+    @OneToOne(mappedBy = "product", cascade = CascadeType.ALL)
     private Warehouse warehouse;
     @JsonIgnore
     private boolean deleted = Boolean.FALSE;
