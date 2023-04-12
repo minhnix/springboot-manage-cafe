@@ -12,7 +12,8 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 @Table(name = "order_details", uniqueConstraints = {
         @UniqueConstraint(columnNames = {
                 "order_id",
-                "menu_id"
+                "menu_id",
+                "size"
         })
 })
 @Getter
@@ -31,5 +32,6 @@ public class OrderDetail {
     private Menu menu;
     private int quantity;
     private Long cost;
+    @JoinColumn(nullable = false)
     private String size;
 }
