@@ -18,6 +18,8 @@ public class Address {
     private Long id;
     private String city;
     private String district;
+    private Long districtCode;
     private String ward;
+    private Long wardCode;
     private String road;
 }

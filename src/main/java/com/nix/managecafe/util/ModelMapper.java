@@ -99,9 +99,9 @@ public class ModelMapper {
         orderResponse.setAddress(order.getAddress());
         orderResponse.setNote(order.getNote());
         orderResponse.setStatus(order.getStatus());
-        orderResponse.setCustomer(new UserResponse(order.getCustomer().getId(), order.getCustomer().getUsername(), order.getCustomer().getFirstname(), order.getCustomer().getLastname()));
+        orderResponse.setCustomer(new UserResponse(order.getCustomer().getId(), order.getCustomer().getUsername(), order.getCustomer().getFirstname(), order.getCustomer().getLastname(), order.getCustomer().getEmail(), order.getCustomer().getPhoneNumber()));
         if (order.getStaff() != null)
-            orderResponse.setStaff(new UserResponse(order.getStaff().getId(), order.getStaff().getUsername(), order.getStaff().getFirstname(), order.getStaff().getLastname()));
+            orderResponse.setStaff(new UserResponse(order.getStaff().getId(), order.getStaff().getUsername(), order.getStaff().getFirstname(), order.getStaff().getLastname(), order.getStaff().getEmail(), order.getStaff().getPhoneNumber()));
         orderResponse.setDeliveryCost(order.getDeliveryCost());
         orderResponse.setAmountDiscount(order.getAmountDiscount());
         long subTotalCost = 0;

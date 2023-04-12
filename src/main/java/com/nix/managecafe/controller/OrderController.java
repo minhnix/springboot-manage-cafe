@@ -77,14 +77,8 @@ public class OrderController {
     }
     @PostMapping
     @PreAuthorize("hasAnyRole('CUSTOMER', 'STAFF', 'ADMIN')")
-    public ResponseEntity<?> createOrder(@Valid @RequestBody OrderRequest orderRequest, @CurrentUser UserPrincipal currentUser) {
-        Order order = orderService.create(orderRequest, currentUser);
-
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentRequest().path("/{orderId}")
-                .buildAndExpand(order.getId()).toUri();
-
-        return ResponseEntity.created(location).body(new ApiResponse(true, "Order created successfully"));
+    public ResponseEntity<Order> createOrder(@Valid @RequestBody OrderRequest orderRequest, @CurrentUser UserPrincipal currentUser) {
+        return new ResponseEntity<>(orderService.create(orderRequest, currentUser), HttpStatus.CREATED);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
