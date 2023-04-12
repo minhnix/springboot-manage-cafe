@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -17,5 +18,5 @@ public class PurchaseOrderResponse {
     private Supplier supplier;
     private PaymentType paymentType;
     private Long totalCost;
-    private Instant createdAt;
+    private LocalDateTime createdAt;
 }

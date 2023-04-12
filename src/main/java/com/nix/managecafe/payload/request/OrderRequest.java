@@ -18,6 +18,6 @@ public class OrderRequest {
     private List<OrderDetailRequest> orderDetails;
     private String note;
     private String address;
-    private Long deliveryCost;
-    private Long amountDiscount;
+    private Long deliveryCost = 0L;
+    private Long amountDiscount = 0L;
 }

@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
 @Getter
 @Setter
@@ -23,5 +24,5 @@ public class OrderResponse {
     private Long deliveryCost;
     private Long amountDiscount;
     private Long totalCost;
-    private Instant createdAt;
+    private LocalDateTime createdAt;
 }
