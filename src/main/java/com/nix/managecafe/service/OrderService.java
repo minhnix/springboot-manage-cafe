@@ -216,7 +216,7 @@ public class OrderService {
             } else {
                 order.setStatus(StatusName.FAILED);
                 orderRepo.save(order);
-                throw new BadRequestException("Not enough ingredients");
+                throw new BadRequestException("Không đủ nguyên liệu");
             }
             warehouseRepo.save(warehouse);
         });
