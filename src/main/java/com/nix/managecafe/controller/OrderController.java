@@ -1,6 +1,7 @@
 package com.nix.managecafe.controller;
 
 import com.nix.managecafe.exception.AppException;
+import com.nix.managecafe.exception.BadRequestException;
 import com.nix.managecafe.model.Order;
 import com.nix.managecafe.model.enumname.StatusName;
 import com.nix.managecafe.payload.request.OrderRequest;
@@ -91,20 +92,14 @@ public class OrderController {
     @PreAuthorize("hasAnyRole('STAFF', 'ADMIN')")
     @PatchMapping("/{orderId}/paid")
     public ResponseEntity<ApiResponse> pay(@PathVariable("orderId") Long orderId, @CurrentUser UserPrincipal currentUser) {
-        orderService.changeOrderStatus(orderId, StatusName.PAID, currentUser);
-        return new ResponseEntity<>(new ApiResponse(true, "Pay successfully"),HttpStatus.OK);
+        orderService.payOrder(orderId, currentUser);
+        return new ResponseEntity<>(new ApiResponse(true, "Đơn đã thanh toán thành công"),HttpStatus.OK);
     }
 
     @PreAuthorize("hasAnyRole('STAFF', 'ADMIN')")
     @PatchMapping("/{orderId}/receive")
     public ResponseEntity<ApiResponse> receive(@PathVariable("orderId") Long orderId, @CurrentUser UserPrincipal currentUser) {
-        try {
-            orderService.checkWarehouse(orderId, currentUser);
-            orderService.changeOrderStatus(orderId, StatusName.DELIVERING, currentUser);
-        } catch (AppException e) {
-            orderService.changeOrderStatus(orderId, StatusName.FAILED, currentUser);
-            return new ResponseEntity<>(new ApiResponse(false, "Failed"), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-        return new ResponseEntity<>(new ApiResponse(true, "Delivering"), HttpStatus.OK);
+        orderService.receiveOrder(orderId, currentUser);
+        return new ResponseEntity<>(new ApiResponse(true, "Nhận đơn thành công"), HttpStatus.OK);
     }
 }

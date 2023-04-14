@@ -56,7 +56,7 @@ public class OrderService {
         if (currentUser.getAuthorities().contains(new SimpleGrantedAuthority(RoleName.ROLE_ADMIN.name()))) {
             return ModelMapper.mapOrderToOrderResponse(order);
         }
-        if (currentUser.getAuthorities().contains(new SimpleGrantedAuthority(RoleName.ROLE_STAFF.name())) && order.getStaff().getId().equals(currentUser.getId())) {
+        if (order.getStaff() != null && currentUser.getAuthorities().contains(new SimpleGrantedAuthority(RoleName.ROLE_STAFF.name())) && order.getStaff().getId().equals(currentUser.getId())) {
             return ModelMapper.mapOrderToOrderResponse(order);
         }
         if (currentUser.getAuthorities().contains(new SimpleGrantedAuthority(RoleName.ROLE_CUSTOMER.name())) &&  order.getCustomer().getId().equals(currentUser.getId())) {
@@ -157,21 +157,39 @@ public class OrderService {
         orderRepo.delete(order);
     }
 
-    public void changeOrderStatus(Long orderId, String statusName, UserPrincipal currentUser) {
+    public void payOrder(Long orderId, UserPrincipal currentUser) {
         Order order = orderRepo.findById(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Order", "id", orderId));
-        if (statusName.equals(StatusName.PAID) && !order.getStaff().getId().equals(currentUser.getId())) {
-            throw new ForbiddenException("Access Denied");
+        if (Objects.equals(order.getStatus(), StatusName.PAID)) {
+            throw new BadRequestException("Đơn hàng này đã thanh toán");
         }
-        order.setStatus(statusName);
+        if (Objects.equals(order.getStatus(), StatusName.PENDING)) {
+            throw new BadRequestException("Bạn chưa nhận đơn hàng");
+        }
+        if (Objects.equals(order.getStatus(), StatusName.FAILED)) {
+            throw new BadRequestException("Đơn hàng đã bị huỷ");
+        }
+        if (!order.getStaff().getId().equals(currentUser.getId())) {
+            throw new ForbiddenException("Đơn hàng này đã nhận bởi người khác. Bạn không thể thanh toán!");
+        }
+        order.setStatus(StatusName.PAID);
         orderRepo.save(order);
     }
 
     @Transactional(rollbackFor = {AppException.class, ResourceNotFoundException.class, Exception.class})
-    public void checkWarehouse(Long orderId, UserPrincipal currentUser) {
+    public void receiveOrder(Long orderId, UserPrincipal currentUser) {
         Order order = orderRepo.findById(orderId).orElseThrow(() -> new ResourceNotFoundException("Order", "id", orderId));
+        if (Objects.equals(order.getStatus(), StatusName.FAILED)) {
+            throw new BadRequestException("Đơn hàng đã bị huỷ");
+        }
+        if (Objects.equals(order.getStatus(), StatusName.PAID)) {
+            throw new BadRequestException("Đơn hàng này đã thanh toán. Không thể nhận đơn!");
+        }
+        if (!Objects.equals(order.getStatus(), StatusName.PENDING) && order.getStaff() != null && Objects.equals(order.getStaff().getId(), currentUser.getId())) {
+            throw new BadRequestException("Đơn hàng này đã nhận");
+        }
         if (!Objects.equals(order.getStatus(), StatusName.PENDING)) {
-            throw new BadRequestException("Đơn hàng này đã được nhận");
+            throw new BadRequestException("Đơn hàng này đã nhận bởi người khác");
         }
 
         List<OrderDetail> orderDetails = order.getOrderDetails();
@@ -196,11 +214,15 @@ public class OrderService {
             if (warehouse.getQuantity() >= value) {
                 warehouse.setQuantity(warehouse.getQuantity() - value);
             } else {
-                throw new AppException("Not enough ingredients");
+                order.setStatus(StatusName.FAILED);
+                orderRepo.save(order);
+                throw new BadRequestException("Not enough ingredients");
             }
             warehouseRepo.save(warehouse);
         });
         order.setStaff(currentUser.getUser());
+        order.setStatus(StatusName.DELIVERING);
+        orderRepo.save(order);
     }
 
     private double calculatorQuantity(double total, String size) {
