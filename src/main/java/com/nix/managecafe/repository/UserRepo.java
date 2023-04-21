@@ -15,7 +15,7 @@ public interface UserRepo extends JpaRepository<User, Long> {
     List<User> findByIdIn(List<Long> userIds);
 
     @EntityGraph(attributePaths = {"roles", "address"})
-    @Cacheable(cacheNames = "usersById")
+    @Cacheable("usersById")
     Optional<User> findById(Long id);
 
     Optional<User> findByUsername(String username);

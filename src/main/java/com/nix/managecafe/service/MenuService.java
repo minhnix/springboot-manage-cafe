@@ -116,7 +116,7 @@ public class MenuService {
         menu1.setName(menu.getName());
         menu1.setCost(menu.getCost());
         menu1.setCategory(category);
-        menu1.setImageUrl(menu1.getImageUrl());
+        menu1.setImageUrl(menu.getImageUrl());
         menu1.getMenuDetails().clear();
 
         menu.getMenuDetails().forEach(
@@ -145,7 +145,11 @@ public class MenuService {
         Session session = entityManager.unwrap(Session.class);
         Filter filter = session.enableFilter("deletedMenuFilter");
         filter.setParameter("isDeleted", false);
-        List<Menu> menus = menuRepo.findByCategoryId(categoryId);
+        List<Menu> menus;
+        if (categoryId == 0) {
+            menus = menuRepo.findAll();
+        } else
+            menus = menuRepo.findByCategoryId(categoryId);
         session.disableFilter("deletedMenuFilter");
         return menus;
     }

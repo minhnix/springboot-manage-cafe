@@ -68,11 +68,11 @@ public class UserController {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @PutMapping("/{username}")
+    @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public User updateUser(@PathVariable("username") String username,
+    public User updateUser(@PathVariable("id") Long id,
                                   @Valid @RequestBody UpdateUserRequest updateRequest) {
-        return userService.updateUser(username, updateRequest);
+        return userService.updateUser(id, updateRequest);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -93,7 +93,7 @@ public class UserController {
     @PreAuthorize("hasAnyRole('CUSTOMER', 'STAFF', 'ADMIN')")
     public ApiResponse updateCurrentUser(@CurrentUser UserPrincipal userPrincipal,
                                          @Valid @RequestBody UpdateUserRequest updateRequest) {
-        userService.updateUser(userPrincipal.getUsername(), updateRequest);
+        userService.updateUser(userPrincipal.getId(), updateRequest);
         return new ApiResponse(true, "Update successfully!!");
     }
 

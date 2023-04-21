@@ -19,6 +19,7 @@ import com.nix.managecafe.util.ValidatePageable;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -80,9 +81,10 @@ public class UserService {
         userRepo.delete(user);
     }
 
-    public User updateUser(String username, UpdateUserRequest updateRequest) {
-        User user = userRepo.findByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
+    @CachePut(value = "usersById")
+    public User updateUser(Long id, UpdateUserRequest updateRequest) {
+        User user = userRepo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Id", "userId", id));
         if (updateRequest.getFirstname() != null) {
             user.setFirstname(updateRequest.getFirstname());
         }
@@ -93,6 +95,7 @@ public class UserService {
             user.setPhoneNumber(updateRequest.getPhoneNumber());
         }
         Address address = user.getAddress();
+        if (address == null) address = new Address();
         if (updateRequest.getAddress() != null) {
             Address address1 = updateRequest.getAddress();
             if (address1.getCity() != null) {
@@ -106,6 +109,12 @@ public class UserService {
             }
             if (address1.getDistrict() != null) {
                 address.setDistrict(address1.getDistrict());
+            }
+            if (address1.getDistrictCode() != null) {
+                address.setDistrictCode(address1.getDistrictCode());
+            }
+            if (address1.getWardCode() != null) {
+                address.setWardCode(address1.getWardCode());
             }
             user.setAddress(address);
         }
