@@ -14,7 +14,7 @@ import java.util.Optional;
 
 public interface MenuRepo extends JpaRepository<Menu, Long> {
     @Query("select menu from Menu menu where menu.category.id = :categoryId")
-    List<Menu> findByCategoryId(@Param("categoryId") Long categoryId);
+    Page<Menu> findByCategoryId(@Param("categoryId") Long categoryId, Pageable pageable);
 
     @EntityGraph(attributePaths = {"category"})
     Page<Menu> findAll(Pageable pageable);

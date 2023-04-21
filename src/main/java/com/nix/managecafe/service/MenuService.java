@@ -141,17 +141,24 @@ public class MenuService {
         menuRepo.deleteById(id);
     }
 
-    public List<Menu> getMenuByCategoryId(Long categoryId) {
+    public PagedResponse<Menu> getMenuByCategoryId(Long categoryId, int page, int size, String sortBy, String sortDir) {
+        ValidatePageable.invoke(page, size);
+
+        Sort sort = (sortDir.equalsIgnoreCase("des")) ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
+        Pageable pageable = PageRequest.of(page, size, sort);
+
         Session session = entityManager.unwrap(Session.class);
         Filter filter = session.enableFilter("deletedMenuFilter");
         filter.setParameter("isDeleted", false);
-        List<Menu> menus;
+        Page<Menu> menus;
         if (categoryId == 0) {
-            menus = menuRepo.findAll();
+            menus = menuRepo.findAll(pageable);
         } else
-            menus = menuRepo.findByCategoryId(categoryId);
+            menus = menuRepo.findByCategoryId(categoryId, pageable);
         session.disableFilter("deletedMenuFilter");
-        return menus;
+
+        return new PagedResponse<>(menus.getContent(), menus.getNumber(),
+                menus.getSize(), menus.getTotalElements(), menus.getTotalPages(), menus.isLast());
     }
 
     public List<Menu> searchByName(String name, Long categoryId) {

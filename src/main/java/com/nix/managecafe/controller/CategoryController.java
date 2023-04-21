@@ -3,6 +3,7 @@ package com.nix.managecafe.controller;
 import com.nix.managecafe.model.Category;
 import com.nix.managecafe.model.Menu;
 import com.nix.managecafe.payload.response.ApiResponse;
+import com.nix.managecafe.payload.response.MenuDetailResponse;
 import com.nix.managecafe.payload.response.PagedResponse;
 import com.nix.managecafe.service.CategoryService;
 import com.nix.managecafe.service.MenuService;
@@ -42,8 +43,13 @@ public class CategoryController {
     }
 
     @GetMapping("/{id}/menu")
-    public List<Menu> getMenuByCategoryId(@PathVariable("id") Long categoryId) {
-        return menuService.getMenuByCategoryId(categoryId);
+    public PagedResponse<Menu> getMenuByCategoryId(@PathVariable("id") Long categoryId,
+                                                                 @RequestParam(value = "page", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) int page,
+                                                                 @RequestParam(value = "size", defaultValue = AppConstants.DEFAULT_PAGE_SIZE) int size,
+                                                                 @RequestParam(value = "sortBy", defaultValue = AppConstants.SORT_BY_ID, required = false) String sortBy,
+                                                                 @RequestParam(value = "sortDir", defaultValue = AppConstants.SORT_ASC, required = false) String sortDir
+    ) {
+        return menuService.getMenuByCategoryId(categoryId, page, size, sortBy, sortDir);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
