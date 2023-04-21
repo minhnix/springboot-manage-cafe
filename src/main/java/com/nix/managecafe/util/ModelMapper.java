@@ -127,6 +127,7 @@ public class ModelMapper {
         cartResponse.setDeleted(cart.getMenu().isDeleted());
         cartResponse.setImageUrl(cart.getMenu().getImageUrl());
         cartResponse.setMenuId(cart.getMenu().getId());
+        cartResponse.setMenuCost(getCostBySize(cart.getMenu().getCost(), cartResponse.getSize()));
         cartResponse.setTotalCost(cart.getQuantity()*getCostBySize(cart.getMenu().getCost(), cartResponse.getSize()));
         return cartResponse;
     }

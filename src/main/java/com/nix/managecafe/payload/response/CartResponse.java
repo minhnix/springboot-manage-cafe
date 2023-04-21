@@ -13,6 +13,7 @@ public class CartResponse {
     private Long quantity;
     private String imageUrl;
     private String size;
+    private Long menuCost;
     private Long totalCost;
     private boolean deleted;
 }

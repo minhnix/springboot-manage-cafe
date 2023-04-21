@@ -33,6 +33,10 @@ public class NotificationService {
         return notificationRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Notification", "id", id));
     }
 
+    public Long getAmountUnreadNotification(Long userId) {
+        return notificationRepo.countUnread(userId);
+    }
+
     public PagedResponse<Notification> getNotificationsByToUserNotRead(int page, int size, Long userId) {
         ValidatePageable.invoke(page, size);
 

@@ -122,7 +122,7 @@ public class MenuService {
         menu.getMenuDetails().forEach(
                 menuDetailRequest -> {
                     MenuDetail menuDetail;
-                    menuDetail = menuDetailRepo.findById(menuDetailRequest.getId())
+                    menuDetail = menuDetailRepo.findByMenuIdAndProductId(menu.getId(), menuDetailRequest.getProductId())
                             .orElse(new MenuDetail());
                     menuDetail.setQuantity(menuDetailRequest.getQuantity());
                     Product product = new Product();

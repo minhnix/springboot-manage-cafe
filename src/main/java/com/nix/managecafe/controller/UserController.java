@@ -109,6 +109,7 @@ public class UserController {
         return new ResponseEntity<>(new ApiResponse(true, "Password updated"), HttpStatus.OK);
     }
 
+    //TODO forgot password with no token
     @PutMapping("/reset-password")
     public ResponseEntity<ApiResponse> resetPassword(@CurrentUser UserPrincipal userPrincipal) {
         try {

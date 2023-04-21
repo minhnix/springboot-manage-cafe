@@ -2,6 +2,7 @@ package com.nix.managecafe.controller;
 
 import com.nix.managecafe.exception.AuthenticationException;
 import com.nix.managecafe.model.Notification;
+import com.nix.managecafe.model.enumname.RoleName;
 import com.nix.managecafe.payload.response.PagedResponse;
 import com.nix.managecafe.security.CurrentUser;
 import com.nix.managecafe.security.UserPrincipal;
@@ -12,6 +13,7 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -26,6 +28,16 @@ public class NotificationController {
         this.simpMessagingTemplate = simpMessagingTemplate;
     }
 
+    @GetMapping("/api/v1/users/unread-notification")
+    public Long getAmountUnreadNotification(@CurrentUser UserPrincipal userPrincipal
+    ) {
+        if (userPrincipal == null) throw new AuthenticationException("Full authentication to get resource");
+        if (userPrincipal.getAuthorities().contains(new SimpleGrantedAuthority(RoleName.ROLE_STAFF.name()))) {
+            return notificationService.getAmountUnreadNotification(1L);
+        }
+            return notificationService.getAmountUnreadNotification(userPrincipal.getId());
+    }
+
     @GetMapping("/api/v1/users/notification")
     public PagedResponse<Notification> getNotification(
             @RequestParam(value = "page", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) int page,
@@ -34,7 +46,10 @@ public class NotificationController {
             @CurrentUser UserPrincipal userPrincipal
             ) {
         if (userPrincipal == null) throw new AuthenticationException("Full authentication to get resource");
-        if (read) {
+        if (userPrincipal.getAuthorities().contains(new SimpleGrantedAuthority(RoleName.ROLE_STAFF.name()))) {
+            return notificationService.getNotificationsByToUser(page, size, 1L);
+        }
+        if (!read) {
             return notificationService.getNotificationsByToUser(page, size, userPrincipal.getId());
         } else {
             return notificationService.getNotificationsByToUserNotRead(page, size, userPrincipal.getId());
