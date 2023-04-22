@@ -44,9 +44,10 @@ public class UserController {
             @RequestParam(value = "page", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) int page,
             @RequestParam(value = "size", defaultValue = AppConstants.DEFAULT_PAGE_SIZE) int size,
             @RequestParam(value = "sortBy", defaultValue = AppConstants.SORT_BY_ID, required = false) String sortBy,
-            @RequestParam(value = "sortDir", defaultValue = AppConstants.SORT_ASC, required = false) String sortDir
+            @RequestParam(value = "sortDir", defaultValue = AppConstants.SORT_ASC, required = false) String sortDir,
+            @RequestParam(value = "rid", required = false) Long roleId
     ) {
-        return userService.getAll(page, size, sortBy, sortDir);
+        return userService.getAll(page, size, sortBy, sortDir, roleId);
     }
 
     @PreAuthorize("hasRole('ADMIN')")

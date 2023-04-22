@@ -157,7 +157,7 @@ public class OrderService {
         orderRepo.delete(order);
     }
 
-    public void payOrder(Long orderId, UserPrincipal currentUser) {
+    public OrderResponse payOrder(Long orderId, UserPrincipal currentUser) {
         Order order = orderRepo.findById(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Order", "id", orderId));
         if (Objects.equals(order.getStatus(), StatusName.PAID)) {
@@ -173,11 +173,11 @@ public class OrderService {
             throw new ForbiddenException("Đơn hàng này đã nhận bởi người khác. Bạn không thể thanh toán!");
         }
         order.setStatus(StatusName.PAID);
-        orderRepo.save(order);
+        return ModelMapper.mapOrderToOrderResponse(orderRepo.save(order));
     }
 
     @Transactional(rollbackFor = {AppException.class, ResourceNotFoundException.class, Exception.class})
-    public void receiveOrder(Long orderId, UserPrincipal currentUser) {
+    public OrderResponse receiveOrder(Long orderId, UserPrincipal currentUser) {
         Order order = orderRepo.findById(orderId).orElseThrow(() -> new ResourceNotFoundException("Order", "id", orderId));
         if (Objects.equals(order.getStatus(), StatusName.FAILED)) {
             throw new BadRequestException("Đơn hàng đã bị huỷ");
@@ -222,7 +222,7 @@ public class OrderService {
         });
         order.setStaff(currentUser.getUser());
         order.setStatus(StatusName.DELIVERING);
-        orderRepo.save(order);
+        return ModelMapper.mapOrderToOrderResponse(orderRepo.save(order));
     }
 
     private double calculatorQuantity(double total, String size) {

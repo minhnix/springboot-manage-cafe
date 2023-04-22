@@ -1,11 +1,17 @@
 package com.nix.managecafe.repository;
 
 import com.nix.managecafe.model.User;
+import com.nix.managecafe.model.enumname.RoleName;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,5 +29,7 @@ public interface UserRepo extends JpaRepository<User, Long> {
     Boolean existsByUsername(String username);
 
     Boolean existsByEmail(String email);
+
+    Page<User> findUserByRolesId(Long roleId, Pageable pageable);
 
 }

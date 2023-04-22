@@ -91,15 +91,13 @@ public class OrderController {
 
     @PreAuthorize("hasAnyRole('STAFF', 'ADMIN')")
     @PatchMapping("/{orderId}/paid")
-    public ResponseEntity<ApiResponse> pay(@PathVariable("orderId") Long orderId, @CurrentUser UserPrincipal currentUser) {
-        orderService.payOrder(orderId, currentUser);
-        return new ResponseEntity<>(new ApiResponse(true, "Đơn đã thanh toán thành công"),HttpStatus.OK);
+    public OrderResponse pay(@PathVariable("orderId") Long orderId, @CurrentUser UserPrincipal currentUser) {
+        return orderService.payOrder(orderId, currentUser);
     }
 
     @PreAuthorize("hasAnyRole('STAFF', 'ADMIN')")
     @PatchMapping("/{orderId}/receive")
-    public ResponseEntity<ApiResponse> receive(@PathVariable("orderId") Long orderId, @CurrentUser UserPrincipal currentUser) {
-        orderService.receiveOrder(orderId, currentUser);
-        return new ResponseEntity<>(new ApiResponse(true, "Nhận đơn thành công"), HttpStatus.OK);
+    public OrderResponse receive(@PathVariable("orderId") Long orderId, @CurrentUser UserPrincipal currentUser) {
+        return orderService.receiveOrder(orderId, currentUser);
     }
 }

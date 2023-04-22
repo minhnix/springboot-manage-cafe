@@ -33,7 +33,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 @Service
 public class UserService {
@@ -121,13 +123,16 @@ public class UserService {
         return userRepo.save(user);
     }
 
-    public PagedResponse<User> getAll(int page, int size, String sortBy, String sortDir) {
+    public PagedResponse<User> getAll(int page, int size, String sortBy, String sortDir, Long roleId) {
         ValidatePageable.invoke(page, size);
 
         Sort sort = (sortDir.equalsIgnoreCase("des")) ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
         Pageable pageable = PageRequest.of(page, size, sort);
-        Page<User> users = userRepo.findAll(pageable);
-
+        Page<User> users;
+        if (roleId == null)
+            users = userRepo.findAll(pageable);
+        else
+            users = userRepo.findUserByRolesId(roleId, pageable);
         return new PagedResponse<>(users.getContent(), users.getNumber(),
                 users.getSize(), users.getTotalElements(), users.getTotalPages(), users.isLast());
     }
