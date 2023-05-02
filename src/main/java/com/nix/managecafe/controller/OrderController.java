@@ -1,11 +1,8 @@
 package com.nix.managecafe.controller;
 
-import com.nix.managecafe.exception.AppException;
-import com.nix.managecafe.exception.BadRequestException;
 import com.nix.managecafe.model.Order;
 import com.nix.managecafe.model.enumname.StatusName;
 import com.nix.managecafe.payload.request.OrderRequest;
-import com.nix.managecafe.payload.response.ApiResponse;
 import com.nix.managecafe.payload.response.OrderResponse;
 import com.nix.managecafe.payload.response.PagedResponse;
 import com.nix.managecafe.security.CurrentUser;
@@ -17,9 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
-import java.net.URI;
 
 @RestController
 @RequestMapping("api/v1/orders")
@@ -42,9 +36,12 @@ public class OrderController {
             @RequestParam(value = "page", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) int page,
             @RequestParam(value = "size", defaultValue = AppConstants.DEFAULT_PAGE_SIZE) int size,
             @RequestParam(value = "sortBy", defaultValue = AppConstants.SORT_BY_CREATED_AT, required = false) String sortBy,
-            @RequestParam(value = "sortDir", defaultValue = AppConstants.SORT_DES, required = false) String sortDir
+            @RequestParam(value = "sortDir", defaultValue = AppConstants.SORT_DES, required = false) String sortDir,
+            @RequestParam(value = "status", required = false) String status,
+            @RequestParam(value = "start", required = false) String start,
+            @RequestParam(value = "end", required = false) String end
     ) {
-        return orderService.getAll(page, size, sortBy, sortDir);
+        return orderService.getAll(page, size, sortBy, sortDir, start, end, status);
     }
     @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
     @GetMapping("/pending")
@@ -100,4 +97,8 @@ public class OrderController {
     public OrderResponse receive(@PathVariable("orderId") Long orderId, @CurrentUser UserPrincipal currentUser) {
         return orderService.receiveOrder(orderId, currentUser);
     }
+
+//    @GetMapping("/count")
+//    @PreAuthorize("hasRole('ADMIN')")
+//    public long getAmountOfOrder()
 }

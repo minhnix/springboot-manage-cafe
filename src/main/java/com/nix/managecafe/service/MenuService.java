@@ -55,6 +55,16 @@ public class MenuService {
                 menus.getSize(), menus.getTotalElements(), menus.getTotalPages(), menus.isLast());
     }
 
+    public long getAmountOfMenu() {
+        Session session = entityManager.unwrap(Session.class);
+        Filter filter = session.enableFilter("deletedMenuFilter");
+        filter.setParameter("isDeleted", false);
+
+        long amount = menuRepo.count();
+        session.disableFilter("deletedMenuFilter");
+        return amount;
+    }
+
     public Menu getOne(Long id) {
         return menuRepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Menu", "id", id));

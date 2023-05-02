@@ -75,6 +75,10 @@ public class UserService {
         return user1;
     }
 
+    public long getAmountOfUserByRoleId(Long roleId) {
+        return userRepo.countByRolesId(roleId);
+    }
+
 
     public void removeByUsername(String username) {
         User user = userRepo.findByUsername(username)

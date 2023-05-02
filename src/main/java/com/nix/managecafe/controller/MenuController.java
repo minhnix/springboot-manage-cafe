@@ -92,4 +92,10 @@ public class MenuController {
                                    @RequestParam(value = "cid", required = false) Long cid) {
         return menuService.searchByName(name, cid);
     }
+
+    @GetMapping("/count")
+    @PreAuthorize("hasRole('ADMIN')")
+    public long getAmountOfMenu() {
+        return menuService.getAmountOfMenu();
+    }
 }

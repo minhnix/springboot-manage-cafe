@@ -118,6 +118,10 @@ public class ProductService {
                 products.getSize(), products.getTotalElements(), products.getTotalPages(), products.isLast());
     }
 
+    public long getAmountOfProduct() {
+        return productRepo.count();
+    }
+
     public List<Product> getAllDeleted() {
         Session session = entityManager.unwrap(Session.class);
         Filter filter = session.enableFilter("deletedProductFilter");

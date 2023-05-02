@@ -27,6 +27,11 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
@@ -59,25 +64,58 @@ public class OrderService {
         if (order.getStaff() != null && currentUser.getAuthorities().contains(new SimpleGrantedAuthority(RoleName.ROLE_STAFF.name())) && order.getStaff().getId().equals(currentUser.getId())) {
             return ModelMapper.mapOrderToOrderResponse(order);
         }
-        if (currentUser.getAuthorities().contains(new SimpleGrantedAuthority(RoleName.ROLE_CUSTOMER.name())) &&  order.getCustomer().getId().equals(currentUser.getId())) {
+        if (currentUser.getAuthorities().contains(new SimpleGrantedAuthority(RoleName.ROLE_CUSTOMER.name())) && order.getCustomer().getId().equals(currentUser.getId())) {
             return ModelMapper.mapOrderToOrderResponse(order);
         }
         throw new ForbiddenException("Access Denied");
     }
 
-    public PagedResponse<OrderResponse> getAll(int page, int size, String sortBy, String sortDir) {
+    public PagedResponse<OrderResponse> getAll(int page, int size, String sortBy, String sortDir, String startDateString, String endDateString, String status) {
         ValidatePageable.invoke(page, size);
 
         Sort sort = (sortDir.equalsIgnoreCase("des")) ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
         Pageable pageable = PageRequest.of(page, size, sort);
-        Page<Order> orders = orderRepo.findAll(pageable);
+        Page<Order> orders = null;
 
-        List<OrderResponse> orderResponses = orders.getContent().stream().map(
-                ModelMapper::mapOrderToOrderResponse
-        ).toList();
+        if (startDateString == null && endDateString == null && status == null)
+            orders = orderRepo.findAll(pageable);
+        if (startDateString == null && endDateString == null && status != null) {
+            orders = orderRepo.findAllByStatus(pageable, status.toUpperCase());
+        }
+        if (startDateString != null || endDateString != null) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            LocalDateTime startDate, endDate;
+            try {
 
-        return new PagedResponse<>(orderResponses, orders.getNumber(),
-                orders.getSize(), orders.getTotalElements(), orders.getTotalPages(), orders.isLast());
+                if (startDateString != null) {
+                    startDate = LocalDate.parse(startDateString, formatter).atStartOfDay();
+                } else {
+                    startDate = LocalDateTime.of(2000, 1, 1, 0, 0, 0);
+                }
+                if (endDateString != null) {
+                    endDate = LocalDate.parse(endDateString, formatter).atTime(LocalTime.MAX);
+                } else {
+                    endDate = LocalDateTime.now();
+                }
+            } catch (DateTimeParseException ex) {
+                throw new BadRequestException("Lỗi định dạng ngày tháng (yyyy-MM-dd)");
+            }
+            if (status != null) {
+                orders = orderRepo.findByCreatedAtBetweenAndStatus(pageable, startDate, endDate, status.toUpperCase());
+            } else {
+                orders = orderRepo.findByCreatedAtBetween(pageable, startDate, endDate);
+            }
+        }
+
+        if (orders != null) {
+            List<OrderResponse> orderResponses = orders.getContent().stream().map(
+                    ModelMapper::mapOrderToOrderResponse
+            ).toList();
+
+            return new PagedResponse<>(orderResponses, orders.getNumber(),
+                    orders.getSize(), orders.getTotalElements(), orders.getTotalPages(), orders.isLast());
+        } else
+            return null;
     }
 
     public PagedResponse<OrderResponse> getAllByStatus(int page, int size, String sortBy, String sortDir, String status) {
@@ -115,7 +153,7 @@ public class OrderService {
 
         Sort sort = (sortDir.equalsIgnoreCase("des")) ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
         Pageable pageable = PageRequest.of(page, size, sort);
-        Page<Order> orders = orderRepo.findAllByStaffId(pageable, staffId);
+        Page<Order> orders = orderRepo.findByStaffId(pageable, staffId);
 
         List<OrderResponse> orderResponses = orders.getContent().stream().map(
                 ModelMapper::mapOrderToOrderResponse

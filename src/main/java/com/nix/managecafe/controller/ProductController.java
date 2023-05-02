@@ -93,4 +93,9 @@ public class ProductController {
     public List<Product> searchByName(@RequestParam("q") String name) {
         return productService.searchByName(name);
     }
+
+    @GetMapping("/count")
+    public long getAmountOfProduct() {
+        return productService.getAmountOfProduct();
+    }
 }

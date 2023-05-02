@@ -32,4 +32,5 @@ public interface UserRepo extends JpaRepository<User, Long> {
 
     Page<User> findUserByRolesId(Long roleId, Pageable pageable);
 
+    long countByRolesId(Long roleId);
 }

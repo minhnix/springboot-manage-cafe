@@ -22,4 +22,6 @@ public interface MenuRepo extends JpaRepository<Menu, Long> {
     Optional<Menu> findById(Long id);
 
     List<Menu> findByNameContains(String name);
+
+    long count();
 }
