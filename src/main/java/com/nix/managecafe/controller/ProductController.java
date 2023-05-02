@@ -28,9 +28,9 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<Product> createSupplier(@Valid @RequestBody Product product) throws URISyntaxException {
+    public ResponseEntity<Product> createProduct(@Valid @RequestBody Product product) throws URISyntaxException {
         if (product.getId() != null) {
-            throw new BadRequestException("A new supplier cannot already have an ID");
+            throw new BadRequestException("A new product cannot already have an ID");
         }
 
         Product result = productService.create(product);
@@ -40,7 +40,7 @@ public class ProductController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Product> updateSupplier(@PathVariable(value = "id") final Long id, @Valid @RequestBody Product product) {
+    public ResponseEntity<Product> updateProduct(@PathVariable(value = "id") final Long id, @Valid @RequestBody Product product) {
         if (product.getId() == null) {
             throw new BadRequestException("Id null");
         }
@@ -56,7 +56,7 @@ public class ProductController {
     }
 
     @PatchMapping(value = "/{id}")
-    public ResponseEntity<Product> partialUpdateSupplier(@PathVariable(value = "id") final Long id,@Valid @RequestBody Product product) {
+    public ResponseEntity<Product> partialUpdateProduct(@PathVariable(value = "id") final Long id,@Valid @RequestBody Product product) {
         if (product.getId() == null) {
             throw new BadRequestException("Id null");
         }
@@ -70,7 +70,7 @@ public class ProductController {
     }
     @DeleteMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteSupplier(@PathVariable(value = "id") final Long id) {
+    public void deleteProduct(@PathVariable(value = "id") final Long id) {
         productService.delete(id);
     }
 
@@ -84,14 +84,10 @@ public class ProductController {
             @RequestParam(value = "page", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) int page,
             @RequestParam(value = "size", defaultValue = AppConstants.DEFAULT_PAGE_SIZE) int size,
             @RequestParam(value = "sortBy", defaultValue = AppConstants.SORT_BY_ID, required = false) String sortBy,
-            @RequestParam(value = "sortDir", defaultValue = AppConstants.SORT_ASC, required = false) String sortDir
+            @RequestParam(value = "sortDir", defaultValue = AppConstants.SORT_ASC, required = false) String sortDir,
+            @RequestParam(value = "keyword", required = false) String keyword
     ) {
-        return productService.getAll(page, size, sortBy, sortDir);
-    }
-
-    @GetMapping("/search")
-    public List<Product> searchByName(@RequestParam("q") String name) {
-        return productService.searchByName(name);
+        return productService.getAll(page, size, sortBy, sortDir, keyword);
     }
 
     @GetMapping("/amount")

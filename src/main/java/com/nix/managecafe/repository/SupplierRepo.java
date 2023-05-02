@@ -16,6 +16,6 @@ public interface SupplierRepo extends JpaRepository<Supplier, Long> {
     Page<Supplier> findAll(Pageable pageable);
     @Cacheable("supplier")
     Optional<Supplier> findById(Long id);
-
-    List<Supplier> findByNameContains(String name);
+    @EntityGraph(attributePaths = {"address"})
+    Page<Supplier> findByNameContains(Pageable pageable, String name);
 }

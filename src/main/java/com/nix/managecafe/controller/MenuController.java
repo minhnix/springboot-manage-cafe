@@ -30,9 +30,11 @@ public class MenuController {
             @RequestParam(value = "page", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) int page,
             @RequestParam(value = "size", defaultValue = AppConstants.DEFAULT_PAGE_SIZE) int size,
             @RequestParam(value = "sortBy", defaultValue = AppConstants.SORT_BY_ID, required = false) String sortBy,
-            @RequestParam(value = "sortDir", defaultValue = AppConstants.SORT_ASC, required = false) String sortDir
+            @RequestParam(value = "sortDir", defaultValue = AppConstants.SORT_ASC, required = false) String sortDir,
+            @RequestParam(value = "keyword", required = false) String keyword,
+            @RequestParam(value = "cid", defaultValue = "0") Long categoryId
     ) {
-        return menuService.getAll(page, size, sortBy, sortDir);
+        return menuService.getAll(page, size, sortBy, sortDir, keyword, categoryId);
     }
 
     @GetMapping("/{id}")
@@ -85,12 +87,6 @@ public class MenuController {
     public ResponseEntity<?> delete(@PathVariable("id") Long id) {
         menuService.delete(id);
         return ResponseEntity.ok(new ApiResponse(true, "Menu deleted successfully"));
-    }
-
-    @GetMapping("/search")
-    public List<Menu> searchByName(@RequestParam(value = "q", defaultValue = "") String name,
-                                   @RequestParam(value = "cid", required = false) Long cid) {
-        return menuService.searchByName(name, cid);
     }
 
     @GetMapping("/amount")

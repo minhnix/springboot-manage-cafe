@@ -89,12 +89,9 @@ public class SupplierController {
             @RequestParam(value = "page", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) int page,
             @RequestParam(value = "size", defaultValue = AppConstants.DEFAULT_PAGE_SIZE) int size,
             @RequestParam(value = "sortBy", defaultValue = AppConstants.SORT_BY_ID, required = false) String sortBy,
-            @RequestParam(value = "sortDir", defaultValue = AppConstants.SORT_ASC, required = false) String sortDir
+            @RequestParam(value = "sortDir", defaultValue = AppConstants.SORT_ASC, required = false) String sortDir,
+            @RequestParam(value = "keyword", required = false) String keyword
     ) {
-        return supplierService.getAll(page, size, sortBy, sortDir);
-    }
-    @GetMapping("/search")
-    public List<Supplier> searchByName(@RequestParam("q") String name) {
-        return supplierService.searchByName(name);
+        return supplierService.getAll(page, size, sortBy, sortDir, keyword);
     }
 }

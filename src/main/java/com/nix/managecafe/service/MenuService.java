@@ -40,7 +40,7 @@ public class MenuService {
         this.entityManager = entityManager;
     }
 
-    public PagedResponse<Menu> getAll(int page, int size, String sortBy, String sortDir) {
+    public PagedResponse<Menu> getAll(int page, int size, String sortBy, String sortDir, String keyword, Long categoryId) {
         ValidatePageable.invoke(page, size);
         Session session = entityManager.unwrap(Session.class);
         Filter filter = session.enableFilter("deletedMenuFilter");
@@ -48,9 +48,17 @@ public class MenuService {
 
         Sort sort = (sortDir.equalsIgnoreCase("des")) ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
         Pageable pageable = PageRequest.of(page, size, sort);
-        Page<Menu> menus = menuRepo.findAll(pageable);
-
+        Page<Menu> menus;
+        if (keyword == null && categoryId == 0)
+            menus = menuRepo.findAll(pageable);
+        else if (keyword != null && categoryId == 0)
+            menus = menuRepo.findByNameContains(pageable, keyword);
+        else if (keyword == null)
+            menus = menuRepo.findByCategoryId(categoryId, pageable);
+        else
+            menus = menuRepo.findByNameContainsAndCategoryId(pageable, keyword, categoryId);
         session.disableFilter("deletedMenuFilter");
+
         return new PagedResponse<>(menus.getContent(), menus.getNumber(),
                 menus.getSize(), menus.getTotalElements(), menus.getTotalPages(), menus.isLast());
     }
@@ -179,7 +187,7 @@ public class MenuService {
 
         Predicate[] predicates = new Predicate[names.length];
         for (int i = 0; i < names.length; i++) {
-            predicates[i] = cb.like(root.get("name"), "%"+ names[i] +"%");
+            predicates[i] = cb.like(root.get("name"), "%" + names[i] + "%");
         }
         Predicate deleted = cb.equal(root.get("deleted"), false);
         if (categoryId != null) {

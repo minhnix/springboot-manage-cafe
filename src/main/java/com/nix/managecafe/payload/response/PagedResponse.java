@@ -1,10 +1,11 @@
 package com.nix.managecafe.payload.response;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class PagedResponse<T> {
 
-    private List<T> content;
+    private List<T> content = new ArrayList<>();
     private int page;
     private int size;
     private long totalElements;

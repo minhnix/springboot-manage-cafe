@@ -27,6 +27,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -64,6 +65,7 @@ public class ProductService {
 
         return productRepo.save(existingProduct);
     }
+
     @CachePut("product")
     public Product partialUpdate(Product product) {
         Product existingProduct = productRepo.findById(product.getId())
@@ -100,7 +102,7 @@ public class ProductService {
         return ModelMapper.mapProductToProductResponse(product);
     }
 
-    public PagedResponse<ProductResponse> getAll(int page, int size, String sortBy, String sortDir) {
+    public PagedResponse<ProductResponse> getAll(int page, int size, String sortBy, String sortDir, String keyword) {
         ValidatePageable.invoke(page, size);
 
         Session session = entityManager.unwrap(Session.class);
@@ -109,11 +111,13 @@ public class ProductService {
 
         Sort sort = (sortDir.equalsIgnoreCase("des")) ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
         Pageable pageable = PageRequest.of(page, size, sort);
-        Page<Product> products = productRepo.findAll(pageable);
+        Page<Product> products;
+        if (keyword == null)
+            products = productRepo.findAll(pageable);
+        else
+            products = productRepo.findByNameContains(pageable, keyword);
         session.disableFilter("deletedProductFilter");
-
         List<ProductResponse> productResponses = products.getContent().stream().map(ModelMapper::mapProductToProductResponse).toList();
-
         return new PagedResponse<>(productResponses, products.getNumber(),
                 products.getSize(), products.getTotalElements(), products.getTotalPages(), products.isLast());
     }
@@ -122,14 +126,6 @@ public class ProductService {
         return productRepo.count();
     }
 
-    public List<Product> getAllDeleted() {
-        Session session = entityManager.unwrap(Session.class);
-        Filter filter = session.enableFilter("deletedProductFilter");
-        filter.setParameter("isDeleted", true);
-        List<Product> products =  productRepo.findAll();
-        session.disableFilter("deletedProductFilter");
-        return products;
-    }
     public List<Product> searchByName(String name) {
         String[] names = name.split(" ");
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
@@ -138,7 +134,7 @@ public class ProductService {
 
         Predicate[] predicates = new Predicate[names.length];
         for (int i = 0; i < names.length; i++) {
-            predicates[i] = cb.like(root.get("name"), "%"+ names[i] +"%");
+            predicates[i] = cb.like(root.get("name"), "%" + names[i] + "%");
         }
         Predicate deleted = cb.equal(root.get("deleted"), false);
         cq.select(root).where(cb.and(deleted), cb.or(predicates));

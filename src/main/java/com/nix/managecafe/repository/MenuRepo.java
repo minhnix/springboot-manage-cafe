@@ -20,8 +20,10 @@ public interface MenuRepo extends JpaRepository<Menu, Long> {
     Page<Menu> findAll(Pageable pageable);
     @EntityGraph(attributePaths = {"category"})
     Optional<Menu> findById(Long id);
-
-    List<Menu> findByNameContains(String name);
+    @EntityGraph(attributePaths = {"category"})
+    Page<Menu> findByNameContainsAndCategoryId(Pageable pageable, String name, Long categoryId);
+    @EntityGraph(attributePaths = {"category"})
+    Page<Menu> findByNameContains(Pageable pageable, String name);
 
     long count();
 }

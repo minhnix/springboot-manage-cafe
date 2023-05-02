@@ -45,9 +45,10 @@ public class UserController {
             @RequestParam(value = "size", defaultValue = AppConstants.DEFAULT_PAGE_SIZE) int size,
             @RequestParam(value = "sortBy", defaultValue = AppConstants.SORT_BY_ID, required = false) String sortBy,
             @RequestParam(value = "sortDir", defaultValue = AppConstants.SORT_ASC, required = false) String sortDir,
-            @RequestParam(value = "rid", required = false) Long roleId
+            @RequestParam(value = "rid", required = false) Long roleId,
+            @RequestParam(value = "keyword", required = false) String keyword
     ) {
-        return userService.getAll(page, size, sortBy, sortDir, roleId);
+        return userService.getAll(page, size, sortBy, sortDir, roleId, keyword);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -135,7 +136,7 @@ public class UserController {
     }
 
     @GetMapping("/amount")
-    public long getAmountOfStaff(@RequestParam(value = "rid", required = true) Long rid) {
+    public long getAmountOfStaff(@RequestParam(value = "rid") Long rid) {
         return userService.getAmountOfUserByRoleId(rid);
     }
 }

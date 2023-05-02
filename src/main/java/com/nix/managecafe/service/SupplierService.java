@@ -111,12 +111,16 @@ public class SupplierService {
         return supplier;
     }
 
-    public PagedResponse<Supplier> getAll(int page, int size, String sortBy, String sortDir) {
+    public PagedResponse<Supplier> getAll(int page, int size, String sortBy, String sortDir, String keyword) {
         ValidatePageable.invoke(page, size);
 
         Sort sort = (sortDir.equalsIgnoreCase("des")) ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
         Pageable pageable = PageRequest.of(page, size, sort);
-        Page<Supplier> suppliers = supplierRepo.findAll(pageable);
+        Page<Supplier> suppliers;
+        if (keyword == null)
+            suppliers = supplierRepo.findAll(pageable);
+        else
+            suppliers = supplierRepo.findByNameContains(pageable, keyword);
 
         return new PagedResponse<>(suppliers.getContent(), suppliers.getNumber(),
                 suppliers.getSize(), suppliers.getTotalElements(), suppliers.getTotalPages(), suppliers.isLast());

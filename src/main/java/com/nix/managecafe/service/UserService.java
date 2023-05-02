@@ -127,7 +127,7 @@ public class UserService {
         return userRepo.save(user);
     }
 
-    public PagedResponse<User> getAll(int page, int size, String sortBy, String sortDir, Long roleId) {
+    public PagedResponse<User> getAll(int page, int size, String sortBy, String sortDir, Long roleId, String keyword) {
         ValidatePageable.invoke(page, size);
 
         Sort sort = (sortDir.equalsIgnoreCase("des")) ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();

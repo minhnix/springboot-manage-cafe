@@ -16,5 +16,6 @@ public interface ProductRepo extends JpaRepository<Product, Long> {
 
     @EntityGraph(attributePaths = "warehouse")
     Page<Product> findAll(Pageable pageable);
-    List<Product> findByNameContains(String name);
+    @EntityGraph(attributePaths = "warehouse")
+    Page<Product> findByNameContains(Pageable pageable, String keyword);
 }
