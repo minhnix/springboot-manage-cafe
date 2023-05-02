@@ -93,7 +93,7 @@ public class MenuController {
         return menuService.searchByName(name, cid);
     }
 
-    @GetMapping("/count")
+    @GetMapping("/amount")
     @PreAuthorize("hasRole('ADMIN')")
     public long getAmountOfMenu() {
         return menuService.getAmountOfMenu();

@@ -14,6 +14,8 @@ public interface OrderRepo extends JpaRepository<Order, Long> {
     Page<Order> findByCreatedAtBetween( Pageable pageable, LocalDateTime startDate, LocalDateTime endDate);
     Page<Order> findByCreatedAtBetweenAndStatus(Pageable pageable, LocalDateTime startDate, LocalDateTime endDate, String status);
     long countByCreatedAtBetween(LocalDateTime startDate, LocalDateTime endDate);
+    long countByStatus(String status);
+    long countByCreatedAtBetweenAndStatus(LocalDateTime startDate, LocalDateTime endDate, String status);
 
 
 }

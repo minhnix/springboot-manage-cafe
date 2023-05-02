@@ -94,7 +94,7 @@ public class ProductController {
         return productService.searchByName(name);
     }
 
-    @GetMapping("/count")
+    @GetMapping("/amount")
     public long getAmountOfProduct() {
         return productService.getAmountOfProduct();
     }

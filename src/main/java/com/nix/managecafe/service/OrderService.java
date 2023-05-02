@@ -163,6 +163,35 @@ public class OrderService {
                 orders.getSize(), orders.getTotalElements(), orders.getTotalPages(), orders.isLast());
     }
 
+    public long getAmountOfOrder(String status, String startDateString, String endDateString) {
+        if (startDateString == null && endDateString == null && status == null)
+            return orderRepo.count();
+        if (startDateString == null && endDateString == null) {
+            return orderRepo.countByStatus(status);
+        }
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDateTime startDate, endDate;
+        try {
+            if (startDateString != null) {
+                startDate = LocalDate.parse(startDateString, formatter).atStartOfDay();
+            } else {
+                startDate = LocalDateTime.of(2000, 1, 1, 0, 0, 0);
+            }
+            if (endDateString != null) {
+                endDate = LocalDate.parse(endDateString, formatter).atTime(LocalTime.MAX);
+            } else {
+                endDate = LocalDateTime.now();
+            }
+        } catch (DateTimeParseException ex) {
+            throw new BadRequestException("Lỗi định dạng ngày tháng (yyyy-MM-dd)");
+        }
+        if (status != null) {
+            return orderRepo.countByCreatedAtBetweenAndStatus(startDate, endDate, status.toUpperCase());
+        } else {
+            return orderRepo.countByCreatedAtBetween(startDate, endDate);
+        }
+    }
+
     @Transactional(rollbackFor = {ResourceNotFoundException.class})
     public Order create(OrderRequest orderRequest, UserPrincipal currentUser) {
         Order order = new Order();

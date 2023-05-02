@@ -98,7 +98,13 @@ public class OrderController {
         return orderService.receiveOrder(orderId, currentUser);
     }
 
-//    @GetMapping("/count")
-//    @PreAuthorize("hasRole('ADMIN')")
-//    public long getAmountOfOrder()
+    @GetMapping("/amount")
+    @PreAuthorize("hasRole('ADMIN')")
+    public long getAmountOfOrder(
+            @RequestParam(value = "status", required = false) String status,
+            @RequestParam(value = "start", required = false) String start,
+            @RequestParam(value = "end", required = false) String end
+    ) {
+        return orderService.getAmountOfOrder(status, start, end);
+    }
 }

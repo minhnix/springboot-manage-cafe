@@ -134,7 +134,7 @@ public class UserController {
             return orderService.getAllByStaffId(page, size, sortBy, sortDir, userPrincipal.getId());
     }
 
-    @GetMapping("/count")
+    @GetMapping("/amount")
     public long getAmountOfStaff(@RequestParam(value = "rid", required = true) Long rid) {
         return userService.getAmountOfUserByRoleId(rid);
     }
