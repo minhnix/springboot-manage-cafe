@@ -42,17 +42,18 @@ public class NotificationController {
     public PagedResponse<Notification> getNotification(
             @RequestParam(value = "page", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) int page,
             @RequestParam(value = "size", defaultValue = AppConstants.DEFAULT_PAGE_SIZE) int size,
-            @RequestParam(value = "read", defaultValue = "False") boolean read,
+            @RequestParam(value = "read", defaultValue = "True") boolean read,
             @CurrentUser UserPrincipal userPrincipal
             ) {
         if (userPrincipal == null) throw new AuthenticationException("Full authentication to get resource");
-        if (userPrincipal.getAuthorities().contains(new SimpleGrantedAuthority(RoleName.ROLE_STAFF.name()))) {
-            return notificationService.getNotificationsByToUser(page, size, 1L);
+        Long userId = 1L;
+        if (userPrincipal.getAuthorities().contains(new SimpleGrantedAuthority(RoleName.ROLE_CUSTOMER.name()))) {
+            userId = userPrincipal.getId();
         }
-        if (!read) {
-            return notificationService.getNotificationsByToUser(page, size, userPrincipal.getId());
+        if (read) {
+            return notificationService.getNotificationsByToUser(page, size, userId);
         } else {
-            return notificationService.getNotificationsByToUserNotRead(page, size, userPrincipal.getId());
+            return notificationService.getNotificationsByToUserNotRead(page, size, userId);
         }
     }
 

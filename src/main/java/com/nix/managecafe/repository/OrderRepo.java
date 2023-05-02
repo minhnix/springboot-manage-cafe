@@ -17,7 +17,7 @@ public interface OrderRepo extends JpaRepository<Order, Long> {
     long countByCreatedAtBetween(LocalDateTime startDate, LocalDateTime endDate);
     long countByStatus(String status);
     long countByCreatedAtBetweenAndStatus(LocalDateTime startDate, LocalDateTime endDate, String status);
-    @Query(value = "SELECT COALESCE (SUM(d.cost * d.quantity), 0) as total from orders o join order_details as d on o.id = d.order_id where o.created_at between ?1 and ?2",
+    @Query(value = "SELECT COALESCE (SUM(d.cost * d.quantity), 0) as total from orders o join order_details as d on o.id = d.order_id where o.created_at between ?1 and ?2 and o.status = 'PAID' ",
             nativeQuery = true)
     long sumRevenue(LocalDateTime start, LocalDateTime end);
 }

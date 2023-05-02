@@ -12,7 +12,9 @@ import org.hibernate.annotations.*;
 import org.hibernate.type.descriptor.java.BooleanJavaType;
 
 @Entity
-@Table(name = "ingredients")
+@Table(name = "ingredients", uniqueConstraints = {
+        @UniqueConstraint(columnNames = "name")
+})
 @Getter
 @Setter
 @NoArgsConstructor

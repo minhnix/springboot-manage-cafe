@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -72,5 +73,10 @@ public class GlobalHandlerException {
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ApiResponse handleAuthenticationException(AuthenticationException e) {
         return new ApiResponse(false, e.getMessage());
+    }
+    @ExceptionHandler(SQLIntegrityConstraintViolationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiResponse handle(SQLIntegrityConstraintViolationException e) {
+        return new ApiResponse(false, "Tên đã tồn tại");
     }
 }
