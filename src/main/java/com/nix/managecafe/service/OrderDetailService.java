@@ -7,6 +7,7 @@ import com.nix.managecafe.model.OrderDetail;
 import com.nix.managecafe.payload.request.OrderDetailRequest;
 import com.nix.managecafe.repository.MenuRepo;
 import com.nix.managecafe.repository.OrderDetailRepo;
+import com.nix.managecafe.util.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,7 +30,7 @@ public class OrderDetailService {
         Menu menu = menuRepo.findById(menuId)
                 .orElseThrow(() -> new ResourceNotFoundException("Menu", "id", menuId));
         orderDetail.setMenu(menu);
-        orderDetail.setCost(menu.getCost());
+        orderDetail.setCost(ModelMapper.getCostBySize(menu.getCost(), orderDetailRequest.getSize()));
         orderDetail.setOrder(order);
         orderDetail.setSize(orderDetailRequest.getSize());
         return orderDetailRepo.save(orderDetail);

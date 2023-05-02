@@ -80,11 +80,11 @@ public class ModelMapper {
         orderDetailResponse.setImageUrl(orderDetail.getMenu().getImageUrl());
         orderDetailResponse.setMenuSize(orderDetail.getSize());
         orderDetailResponse.setMenuCost(orderDetail.getCost());
-        orderDetailResponse.setTotalCost(orderDetail.getQuantity() * getCostBySize(orderDetail.getCost(), orderDetail.getSize()));
+        orderDetailResponse.setTotalCost(orderDetail.getQuantity() * orderDetail.getCost());
         return orderDetailResponse;
     }
 
-    private static long getCostBySize(long cost, String size) {
+    public static long getCostBySize(long cost, String size) {
         return switch (size) {
             case "SIZE_M" -> cost + AppConstants.PRICE_SIZE_M;
             case "SIZE_L" -> cost + AppConstants.PRICE_SIZE_L;
@@ -128,7 +128,7 @@ public class ModelMapper {
         cartResponse.setImageUrl(cart.getMenu().getImageUrl());
         cartResponse.setMenuId(cart.getMenu().getId());
         cartResponse.setMenuCost(getCostBySize(cart.getMenu().getCost(), cartResponse.getSize()));
-        cartResponse.setTotalCost(cart.getQuantity()*getCostBySize(cart.getMenu().getCost(), cartResponse.getSize()));
+        cartResponse.setTotalCost(cart.getQuantity() * getCostBySize(cart.getMenu().getCost(), cartResponse.getSize()));
         return cartResponse;
     }
 }
