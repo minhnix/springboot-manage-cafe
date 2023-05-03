@@ -28,17 +28,16 @@ public class AnalyticsService {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDateTime startDate, endDate;
         try {
-            if (startDateString != null) {
+            if (startDateString != null && !startDateString.isBlank()) {
                 startDate = LocalDate.parse(startDateString, formatter).atStartOfDay();
             } else {
                 startDate = LocalDateTime.of(2000, 1, 1, 0, 0, 0);
             }
-            if (endDateString != null) {
+            if (endDateString != null && !endDateString.isBlank()) {
                 endDate = LocalDate.parse(endDateString, formatter).atTime(LocalTime.MAX);
             } else {
                 endDate = LocalDateTime.now();
-            }
-        } catch (DateTimeParseException ex) {
+            }        } catch (DateTimeParseException ex) {
             throw new BadRequestException("Lỗi định dạng ngày tháng (yyyy-MM-dd)");
         }
 

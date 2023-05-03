@@ -37,9 +37,12 @@ public class PurchaseOrderController {
             @RequestParam(value = "page", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) int page,
             @RequestParam(value = "size", defaultValue = AppConstants.DEFAULT_PAGE_SIZE) int size,
             @RequestParam(value = "sortBy", defaultValue = "createdAt", required = false) String sortBy,
-            @RequestParam(value = "sortDir", defaultValue = "des", required = false) String sortDir
+            @RequestParam(value = "sortDir", defaultValue = "des", required = false) String sortDir,
+            @RequestParam(value = "start", required = false) String start,
+            @RequestParam(value = "end", required = false) String end,
+            @RequestParam(value = "keyword", required = false) String keyword
     ) {
-        return purchaseOrderService.getAll(page, size, sortBy, sortDir);
+        return purchaseOrderService.getAll(page, size, sortBy, sortDir, start, end, keyword);
     }
 
     @PostMapping

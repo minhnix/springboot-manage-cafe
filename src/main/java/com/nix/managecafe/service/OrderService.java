@@ -70,52 +70,45 @@ public class OrderService {
         throw new ForbiddenException("Access Denied");
     }
 
-    public PagedResponse<OrderResponse> getAll(int page, int size, String sortBy, String sortDir, String startDateString, String endDateString, String status) {
+    public PagedResponse<OrderResponse> getAll(int page, int size, String sortBy, String sortDir, String startDateString, String endDateString, String status, String keyword) {
         ValidatePageable.invoke(page, size);
 
         Sort sort = (sortDir.equalsIgnoreCase("des")) ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
         Pageable pageable = PageRequest.of(page, size, sort);
-        Page<Order> orders = null;
-
-        if (startDateString == null && endDateString == null && status == null)
-            orders = orderRepo.findAll(pageable);
-        if (startDateString == null && endDateString == null && status != null) {
-            orders = orderRepo.findAllByStatus(pageable, status.toUpperCase());
-        }
-        if (startDateString != null || endDateString != null) {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            LocalDateTime startDate, endDate;
-            try {
-
-                if (startDateString != null) {
-                    startDate = LocalDate.parse(startDateString, formatter).atStartOfDay();
-                } else {
-                    startDate = LocalDateTime.of(2000, 1, 1, 0, 0, 0);
-                }
-                if (endDateString != null) {
-                    endDate = LocalDate.parse(endDateString, formatter).atTime(LocalTime.MAX);
-                } else {
-                    endDate = LocalDateTime.now();
-                }
-            } catch (DateTimeParseException ex) {
-                throw new BadRequestException("Lỗi định dạng ngày tháng (yyyy-MM-dd)");
+        Page<Order> orders;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDateTime startDate, endDate;
+        if (status.isBlank() && status != null) status = null;
+        if (keyword.isBlank() && keyword != null) keyword = null;
+        try {
+            if (startDateString != null && !startDateString.isBlank()) {
+                startDate = LocalDate.parse(startDateString, formatter).atStartOfDay();
+            } else {
+                startDate = LocalDateTime.of(2000, 1, 1, 0, 0, 0);
             }
+            if (endDateString != null && !endDateString.isBlank()) {
+                endDate = LocalDate.parse(endDateString, formatter).atTime(LocalTime.MAX);
+            } else {
+                endDate = LocalDateTime.now();
+            }
+        } catch (DateTimeParseException ex) {
+            throw new BadRequestException("Lỗi định dạng ngày tháng (yyyy-MM-dd)");
+        }
+        if (keyword == null) {
             if (status != null) {
                 orders = orderRepo.findByCreatedAtBetweenAndStatus(pageable, startDate, endDate, status.toUpperCase());
             } else {
                 orders = orderRepo.findByCreatedAtBetween(pageable, startDate, endDate);
             }
+        } else {
+                orders = orderRepo.findByCreatedAtBetweenAndStatusAndKeyword(pageable, startDate, endDate, status, keyword);
         }
+        List<OrderResponse> orderResponses = orders.getContent().stream().map(
+                ModelMapper::mapOrderToOrderResponse
+        ).toList();
 
-        if (orders != null) {
-            List<OrderResponse> orderResponses = orders.getContent().stream().map(
-                    ModelMapper::mapOrderToOrderResponse
-            ).toList();
-
-            return new PagedResponse<>(orderResponses, orders.getNumber(),
-                    orders.getSize(), orders.getTotalElements(), orders.getTotalPages(), orders.isLast());
-        } else
-            return null;
+        return new PagedResponse<>(orderResponses, orders.getNumber(),
+                orders.getSize(), orders.getTotalElements(), orders.getTotalPages(), orders.isLast());
     }
 
     public PagedResponse<OrderResponse> getAllByStatus(int page, int size, String sortBy, String sortDir, String status) {
@@ -172,17 +165,16 @@ public class OrderService {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDateTime startDate, endDate;
         try {
-            if (startDateString != null) {
+            if (startDateString != null && !startDateString.isBlank()) {
                 startDate = LocalDate.parse(startDateString, formatter).atStartOfDay();
             } else {
                 startDate = LocalDateTime.of(2000, 1, 1, 0, 0, 0);
             }
-            if (endDateString != null) {
+            if (endDateString != null && !endDateString.isBlank()) {
                 endDate = LocalDate.parse(endDateString, formatter).atTime(LocalTime.MAX);
             } else {
                 endDate = LocalDateTime.now();
-            }
-        } catch (DateTimeParseException ex) {
+            }        } catch (DateTimeParseException ex) {
             throw new BadRequestException("Lỗi định dạng ngày tháng (yyyy-MM-dd)");
         }
         if (status != null) {

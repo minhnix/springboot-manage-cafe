@@ -4,6 +4,8 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
+
 @Getter
 @Setter
 public class TimeSheetRequest {
@@ -12,4 +14,6 @@ public class TimeSheetRequest {
     @NotNull
     private Long shiftId;
     private Long newShiftId;
+    private String startDate;
+    private Long salary;
 }

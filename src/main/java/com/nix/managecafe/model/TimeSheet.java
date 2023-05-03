@@ -27,5 +27,6 @@ public class TimeSheet {
     @ManyToOne
     private User user;
     private LocalDate startDay;
+    private Long salary;
 }
 

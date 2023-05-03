@@ -1,5 +1,6 @@
 package com.nix.managecafe.service;
 
+import com.nix.managecafe.exception.BadRequestException;
 import com.nix.managecafe.exception.ResourceNotFoundException;
 import com.nix.managecafe.model.PurchaseOrder;
 import com.nix.managecafe.model.Supplier;
@@ -19,6 +20,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 
 @Service
@@ -39,12 +45,32 @@ public class PurchaseOrderService {
                 .orElseThrow(() -> new ResourceNotFoundException("Purchase order", "id", purchaseOrderId)));
     }
 
-    public PagedResponse<PurchaseOrderResponse> getAll(int page, int size, String sortBy, String sortDir) {
+    public PagedResponse<PurchaseOrderResponse> getAll(int page, int size, String sortBy, String sortDir, String startDateString, String endDateString, String keyword) {
         ValidatePageable.invoke(page, size);
 
         Sort sort = (sortDir.equalsIgnoreCase("des")) ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
         Pageable pageable = PageRequest.of(page, size, sort);
-        Page<PurchaseOrder> purchaseOrders = purchaseOrderRepo.findAll(pageable);
+        Page<PurchaseOrder> purchaseOrders;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDateTime startDate, endDate;
+        try {
+            if (startDateString != null && !startDateString.isBlank()) {
+                startDate = LocalDate.parse(startDateString, formatter).atStartOfDay();
+            } else {
+                startDate = LocalDateTime.of(2000, 1, 1, 0, 0, 0);
+            }
+            if (endDateString != null && !endDateString.isBlank()) {
+                endDate = LocalDate.parse(endDateString, formatter).atTime(LocalTime.MAX);
+            } else {
+                endDate = LocalDateTime.now();
+            }
+        } catch (DateTimeParseException ex) {
+            throw new BadRequestException("Lỗi định dạng ngày tháng (yyyy-MM-dd)");
+        }
+        if (keyword != null)
+            purchaseOrders = purchaseOrderRepo.findAllBySupplier_NameContainingAndCreatedAtBetween(pageable, keyword, startDate, endDate);
+        else
+            purchaseOrders = purchaseOrderRepo.findAllByCreatedAtBetween(pageable, startDate, endDate);
 
         List<PurchaseOrderResponse> purchaseOrderResponses = purchaseOrders.getContent().stream().map(
                 ModelMapper::mapPurchaseOrderToPurchaseOrderResponse

@@ -39,9 +39,10 @@ public class OrderController {
             @RequestParam(value = "sortDir", defaultValue = AppConstants.SORT_DES, required = false) String sortDir,
             @RequestParam(value = "status", required = false) String status,
             @RequestParam(value = "start", required = false) String start,
-            @RequestParam(value = "end", required = false) String end
+            @RequestParam(value = "end", required = false) String end,
+            @RequestParam(value = "keyword", required = false) String keyword
     ) {
-        return orderService.getAll(page, size, sortBy, sortDir, start, end, status);
+        return orderService.getAll(page, size, sortBy, sortDir, start, end, status, keyword);
     }
     @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
     @GetMapping("/pending")

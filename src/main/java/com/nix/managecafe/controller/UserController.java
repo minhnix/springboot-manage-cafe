@@ -15,6 +15,7 @@ import com.nix.managecafe.security.UserPrincipal;
 import com.nix.managecafe.service.OrderService;
 import com.nix.managecafe.service.UserService;
 import com.nix.managecafe.util.AppConstants;
+import com.nix.managecafe.util.ModelMapper;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -66,7 +67,7 @@ public class UserController {
                 .fromCurrentContextPath().path("/api/users/{username}")
                 .buildAndExpand(user.getUsername()).toUri();
 
-        return ResponseEntity.created(location).body(new ApiResponse(true, "Create user successfully"));
+        return ResponseEntity.created(location).body(ModelMapper.mapUserToUserSummary(user));
     }
 
     @PreAuthorize("hasRole('ADMIN')")
