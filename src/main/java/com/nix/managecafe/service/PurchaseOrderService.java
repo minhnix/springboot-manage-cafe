@@ -69,6 +69,7 @@ public class PurchaseOrderService {
             throw new BadRequestException("Lỗi định dạng ngày tháng (yyyy-MM-dd)");
         }
         ValidateDate.invoke(startDate, endDate);
+        if (keyword != null && keyword.isBlank()) keyword = null;
         if (keyword != null)
             purchaseOrders = purchaseOrderRepo.findAllBySupplier_NameContainingAndCreatedAtBetween(pageable, keyword, startDate, endDate);
         else

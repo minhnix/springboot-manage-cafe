@@ -111,6 +111,9 @@ public class UserService {
         if (updateRequest.getPhoneNumber() != null) {
             user.setPhoneNumber(updateRequest.getPhoneNumber());
         }
+        if (updateRequest.getEmail() != null) {
+            user.setEmail(updateRequest.getEmail());
+        }
         Address address = user.getAddress();
         if (address == null) address = new Address();
         if (updateRequest.getAddress() != null) {
