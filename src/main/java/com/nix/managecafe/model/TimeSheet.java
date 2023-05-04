@@ -22,11 +22,10 @@ public class TimeSheet {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @ManyToOne
-    @JsonIgnore
     private Shift shift;
     @ManyToOne
     private User user;
-    private LocalDate startDay;
+    private LocalDate startDate;
     private Long salary;
 }
 

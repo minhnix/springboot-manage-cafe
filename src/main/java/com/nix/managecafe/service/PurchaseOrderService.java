@@ -12,6 +12,7 @@ import com.nix.managecafe.payload.response.PurchaseOrderResponse;
 import com.nix.managecafe.repository.PurchaseOrderRepo;
 import com.nix.managecafe.repository.WarehouseRepo;
 import com.nix.managecafe.util.ModelMapper;
+import com.nix.managecafe.util.ValidateDate;
 import com.nix.managecafe.util.ValidatePageable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -67,6 +68,7 @@ public class PurchaseOrderService {
         } catch (DateTimeParseException ex) {
             throw new BadRequestException("Lỗi định dạng ngày tháng (yyyy-MM-dd)");
         }
+        ValidateDate.invoke(startDate, endDate);
         if (keyword != null)
             purchaseOrders = purchaseOrderRepo.findAllBySupplier_NameContainingAndCreatedAtBetween(pageable, keyword, startDate, endDate);
         else

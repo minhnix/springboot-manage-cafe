@@ -18,6 +18,7 @@ import com.nix.managecafe.repository.*;
 import com.nix.managecafe.security.UserPrincipal;
 import com.nix.managecafe.util.AppConstants;
 import com.nix.managecafe.util.ModelMapper;
+import com.nix.managecafe.util.ValidateDate;
 import com.nix.managecafe.util.ValidatePageable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -78,8 +79,8 @@ public class OrderService {
         Page<Order> orders;
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDateTime startDate, endDate;
-        if (status.isBlank() && status != null) status = null;
-        if (keyword.isBlank() && keyword != null) keyword = null;
+        if (status != null && status.isBlank()) status = null;
+        if (keyword != null && keyword.isBlank()) keyword = null;
         try {
             if (startDateString != null && !startDateString.isBlank()) {
                 startDate = LocalDate.parse(startDateString, formatter).atStartOfDay();
@@ -94,6 +95,7 @@ public class OrderService {
         } catch (DateTimeParseException ex) {
             throw new BadRequestException("Lỗi định dạng ngày tháng (yyyy-MM-dd)");
         }
+        ValidateDate.invoke(startDate, endDate);
         if (keyword == null) {
             if (status != null) {
                 orders = orderRepo.findByCreatedAtBetweenAndStatus(pageable, startDate, endDate, status.toUpperCase());
@@ -177,6 +179,7 @@ public class OrderService {
             }        } catch (DateTimeParseException ex) {
             throw new BadRequestException("Lỗi định dạng ngày tháng (yyyy-MM-dd)");
         }
+        ValidateDate.invoke(startDate, endDate);
         if (status != null) {
             return orderRepo.countByCreatedAtBetweenAndStatus(startDate, endDate, status.toUpperCase());
         } else {
@@ -280,6 +283,7 @@ public class OrderService {
             warehouseRepo.save(warehouse);
         });
         order.setStaff(currentUser.getUser());
+        order.setStaffFullName(currentUser.getUser().getLastname() + " " + currentUser.getUser().getFirstname());
         order.setStatus(StatusName.DELIVERING);
         return ModelMapper.mapOrderToOrderResponse(orderRepo.save(order));
     }

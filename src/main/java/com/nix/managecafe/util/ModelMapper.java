@@ -99,6 +99,7 @@ public class ModelMapper {
         orderResponse.setAddress(order.getAddress());
         orderResponse.setNote(order.getNote());
         orderResponse.setStatus(order.getStatus());
+        orderResponse.setStaffFullName(order.getStaffFullName());
         orderResponse.setCustomer(new UserResponse(order.getCustomer().getId(), order.getCustomer().getUsername(), order.getCustomer().getFirstname(), order.getCustomer().getLastname(), order.getCustomer().getEmail(), order.getCustomer().getPhoneNumber()));
         if (order.getStaff() != null)
             orderResponse.setStaff(new UserResponse(order.getStaff().getId(), order.getStaff().getUsername(), order.getStaff().getFirstname(), order.getStaff().getLastname(), order.getStaff().getEmail(), order.getStaff().getPhoneNumber()));
@@ -130,5 +131,19 @@ public class ModelMapper {
         cartResponse.setMenuCost(getCostBySize(cart.getMenu().getCost(), cartResponse.getSize()));
         cartResponse.setTotalCost(cart.getQuantity() * getCostBySize(cart.getMenu().getCost(), cartResponse.getSize()));
         return cartResponse;
+    }
+
+    public static StaffResponse mapTimeSheetToStaffResponse(TimeSheet timeSheet) {
+        StaffResponse staffResponse = new StaffResponse();
+        staffResponse.setEmail(timeSheet.getUser().getEmail());
+        staffResponse.setLastname(timeSheet.getUser().getLastname());
+        staffResponse.setFirstname(timeSheet.getUser().getFirstname());
+        staffResponse.setUsername(timeSheet.getUser().getUsername());
+        staffResponse.setUserId(timeSheet.getUser().getId());
+        staffResponse.setSalary(timeSheet.getSalary());
+        staffResponse.setShiftId(timeSheet.getShift().getId());
+        staffResponse.setShift(timeSheet.getShift().getName());
+        staffResponse.setStartDate(timeSheet.getStartDate());
+        return staffResponse;
     }
 }

@@ -4,6 +4,7 @@ import com.nix.managecafe.exception.ForbiddenException;
 import com.nix.managecafe.exception.ResourceNotFoundException;
 import com.nix.managecafe.model.Notification;
 import com.nix.managecafe.model.Order;
+import com.nix.managecafe.model.enumname.RoleName;
 import com.nix.managecafe.payload.response.PagedResponse;
 import com.nix.managecafe.repository.NotificationRepo;
 import com.nix.managecafe.security.UserPrincipal;
@@ -11,6 +12,7 @@ import com.nix.managecafe.util.ValidatePageable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -60,7 +62,12 @@ public class NotificationService {
     public Notification changeToRead(Long id, UserPrincipal userPrincipal) {
         Notification notification = notificationRepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Notification", "id", id));
-        if (!Objects.equals(notification.getCreatedBy(), userPrincipal.getId())) {
+        if (notification.getToUser().getId() == 1L && // 1 = ROLE_ADMIN
+                !userPrincipal.getAuthorities().contains(new SimpleGrantedAuthority(RoleName.ROLE_STAFF.name()))
+        ) {
+            throw new ForbiddenException("Access Denied");
+        }
+        if (!Objects.equals(notification.getToUser().getId(), userPrincipal.getId())) {
             throw new ForbiddenException("Access Denied");
         }
         notification.setWatched(true);

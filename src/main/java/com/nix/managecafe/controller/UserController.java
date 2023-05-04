@@ -79,11 +79,11 @@ public class UserController {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping("/{username}")
+    @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteByUsername(@PathVariable("username") String username
+    public void deleteByUserId(@PathVariable("id") Long id
     ) {
-        userService.removeByUsername(username);
+        userService.deleteByUserId(id);
     }
 
     @GetMapping("/me")

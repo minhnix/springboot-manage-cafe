@@ -49,9 +49,9 @@ public class MenuService {
         Sort sort = (sortDir.equalsIgnoreCase("des")) ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
         Pageable pageable = PageRequest.of(page, size, sort);
         Page<Menu> menus;
-        if (keyword == null && categoryId == 0)
+        if (keyword == null && categoryId.equals(0L))
             menus = menuRepo.findAll(pageable);
-        else if (keyword != null && categoryId == 0)
+        else if (keyword != null && categoryId.equals(0L))
             menus = menuRepo.findByNameContains(pageable, keyword);
         else if (keyword == null)
             menus = menuRepo.findByCategoryId(categoryId, pageable);
@@ -169,7 +169,8 @@ public class MenuService {
         Filter filter = session.enableFilter("deletedMenuFilter");
         filter.setParameter("isDeleted", false);
         Page<Menu> menus;
-        if (categoryId == 0) {
+        if (categoryId == null) categoryId = 0L;
+        if (categoryId.equals(0L)) {
             menus = menuRepo.findAll(pageable);
         } else
             menus = menuRepo.findByCategoryId(categoryId, pageable);

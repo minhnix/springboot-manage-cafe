@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -30,4 +31,8 @@ public interface OrderRepo extends JpaRepository<Order, Long> {
     @Query(value = "SELECT COALESCE (SUM(d.cost * d.quantity), 0) as total from orders o join order_details as d on o.id = d.order_id where o.created_at between ?1 and ?2 and o.status = 'PAID' ",
             nativeQuery = true)
     long sumRevenue(LocalDateTime start, LocalDateTime end);
+
+    @Modifying
+    @Query("update Order o set o.staff = null where o.staff.id = :id")
+    void updateOrderByStaffIdWhenDelete(@Param("id") Long userId);
 }

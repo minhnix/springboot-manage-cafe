@@ -45,4 +45,5 @@ public class Order extends UserAudit {
     private Long deliveryCost;
     @Column(columnDefinition = "BIGINT default 0")
     private Long amountDiscount;
+    private String staffFullName;
 }

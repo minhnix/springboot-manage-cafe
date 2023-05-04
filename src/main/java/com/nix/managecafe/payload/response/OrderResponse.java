@@ -17,6 +17,7 @@ public class OrderResponse {
     private List<OrderDetailResponse> orderDetails;
     private UserResponse customer;
     private UserResponse staff;
+    private String staffFullName;
     private String address;
     private String status;
     private String note;

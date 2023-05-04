@@ -4,6 +4,7 @@ import com.nix.managecafe.exception.BadRequestException;
 import com.nix.managecafe.payload.response.ProfitResponse;
 import com.nix.managecafe.repository.OrderRepo;
 import com.nix.managecafe.repository.PurchaseOrderRepo;
+import com.nix.managecafe.util.ValidateDate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -40,6 +41,7 @@ public class AnalyticsService {
             }        } catch (DateTimeParseException ex) {
             throw new BadRequestException("Lỗi định dạng ngày tháng (yyyy-MM-dd)");
         }
+        ValidateDate.invoke(startDate, endDate);
 
         long expense = purchaseOrderRepo.sumExpense(startDate, endDate);
         long revenue = orderRepo.sumRevenue(startDate, endDate);

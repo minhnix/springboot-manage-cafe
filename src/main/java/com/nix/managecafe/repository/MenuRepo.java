@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface MenuRepo extends JpaRepository<Menu, Long> {
-    @Query("select menu from Menu menu where menu.category.id = :categoryId")
+    @Query("select menu, c from Menu menu left join menu.category as c where c.id = :categoryId")
     Page<Menu> findByCategoryId(@Param("categoryId") Long categoryId, Pageable pageable);
 
     @EntityGraph(attributePaths = {"category"})
