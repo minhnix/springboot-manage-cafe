@@ -10,7 +10,7 @@ public class PurchaseOrderDetailResponse {
     private String productName;
     private String imageUrl;
     private String unit;
-    private Long quantity;
+    private Double quantity;
     private Long productCost;
-    private Long totalCost;
+    private Double totalCost;
 }

@@ -17,6 +17,6 @@ public class PurchaseOrderResponse {
     private List<PurchaseOrderDetailResponse> purchaseOrderDetails;
     private Supplier supplier;
     private PaymentType paymentType;
-    private Long totalCost;
+    private Double totalCost;
     private LocalDateTime createdAt;
 }

@@ -22,6 +22,6 @@ public class PurchaseOrderDetail {
     @ManyToOne
     @JsonIgnore
     private PurchaseOrder purchaseOrder;
-    private Long quantity;
+    private Double quantity;
     private Long cost;
 }

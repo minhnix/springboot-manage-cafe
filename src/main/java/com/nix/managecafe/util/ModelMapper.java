@@ -3,6 +3,8 @@ package com.nix.managecafe.util;
 import com.nix.managecafe.model.*;
 import com.nix.managecafe.payload.response.UserSummary;
 import com.nix.managecafe.payload.response.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +12,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 public class ModelMapper {
-
     public static MenuDetailResponse mapMenuToMenuResponse(Menu menu) {
         MenuDetailResponse menuDetailResponse = new MenuDetailResponse();
         menuDetailResponse.setCost(menu.getCost());
@@ -60,7 +61,7 @@ public class ModelMapper {
         purchaseOrderResponse.setCreatedAt(purchaseOrder.getCreatedAt());
         purchaseOrderResponse.setSupplier(purchaseOrder.getSupplier());
         purchaseOrderResponse.setPaymentType(purchaseOrder.getPayment());
-        long totalCost = 0;
+        double totalCost = 0;
         List<PurchaseOrderDetailResponse> purchaseOrderDetailResponses = new ArrayList<>();
         for (PurchaseOrderDetail purchaseOrderDetail : purchaseOrder.getPurchaseOrderDetails()) {
             PurchaseOrderDetailResponse detail = ModelMapper.mapPurchaseOrderDetailToPurchaseOrderDetailResponse(purchaseOrderDetail);

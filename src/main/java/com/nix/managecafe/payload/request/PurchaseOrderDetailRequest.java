@@ -12,5 +12,5 @@ public class PurchaseOrderDetailRequest {
     @NotNull
     private Long productId;
     @NotNull
-    private Long quantity;
+    private Double quantity;
 }
