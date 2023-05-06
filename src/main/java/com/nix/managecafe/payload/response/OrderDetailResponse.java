@@ -11,6 +11,7 @@ import lombok.Setter;
 public class OrderDetailResponse {
     private Long id;
     private String menu;
+    private Long menuId;
     private String imageUrl;
     private int quantity;
     private Long menuCost;

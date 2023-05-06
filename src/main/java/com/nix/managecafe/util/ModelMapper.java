@@ -75,6 +75,7 @@ public class ModelMapper {
     public static OrderDetailResponse mapOrderDetailToOrderDetailResponse(OrderDetail orderDetail) {
         OrderDetailResponse orderDetailResponse = new OrderDetailResponse();
         orderDetailResponse.setId(orderDetail.getId());
+        orderDetailResponse.setMenuId(orderDetail.getMenu().getId());
         orderDetailResponse.setQuantity(orderDetail.getQuantity());
         orderDetailResponse.setMenu(orderDetail.getMenu().getName());
         orderDetailResponse.setImageUrl(orderDetail.getMenu().getImageUrl());

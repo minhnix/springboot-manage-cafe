@@ -67,7 +67,8 @@ public class NotificationService {
         ) {
             throw new ForbiddenException("Access Denied");
         }
-        if (!Objects.equals(notification.getToUser().getId(), userPrincipal.getId())) {
+        if (!Objects.equals(notification.getToUser().getId(), userPrincipal.getId()) &&
+                userPrincipal.getAuthorities().contains(new SimpleGrantedAuthority(RoleName.ROLE_CUSTOMER.name()))) {
             throw new ForbiddenException("Access Denied");
         }
         notification.setWatched(true);

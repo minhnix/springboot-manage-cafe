@@ -126,14 +126,12 @@ public class UserController {
     @GetMapping("/me/orders")
     public PagedResponse<OrderResponse> getAllOrder(@CurrentUser UserPrincipal userPrincipal,
                                                     @RequestParam(value = "page", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) int page,
-                                                    @RequestParam(value = "size", defaultValue = AppConstants.DEFAULT_PAGE_SIZE) int size,
-                                                    @RequestParam(value = "sortBy", defaultValue = AppConstants.SORT_BY_CREATED_AT, required = false) String sortBy,
-                                                    @RequestParam(value = "sortDir", defaultValue = AppConstants.SORT_DES, required = false) String sortDir
+                                                    @RequestParam(value = "size", defaultValue = AppConstants.DEFAULT_PAGE_SIZE) int size
     ) {
         if (userPrincipal.getAuthorities().contains(new SimpleGrantedAuthority(RoleName.ROLE_CUSTOMER.name())))
-            return orderService.getAllByCreateAt(page, size, sortBy, sortDir, userPrincipal.getId());
+            return orderService.getAllByCreateAt(page, size, userPrincipal.getId());
         else
-            return orderService.getAllByStaffId(page, size, sortBy, sortDir, userPrincipal.getId());
+            return orderService.getAllByStaffId(page, size, userPrincipal.getId());
     }
 
     @GetMapping("/amount")

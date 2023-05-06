@@ -33,34 +33,35 @@ public class AnalyticsController {
     @GetMapping("/revenue")
     public List<Object[]> getRevenueRecent(
             @RequestParam(value = "recent", required = false, defaultValue = "0") int dayAgo,
-            @RequestParam(value = "m", required = false) Integer month,
-            @RequestParam(value = "y", required = false) Integer year
+            @RequestParam(value = "y", required = false) Integer year,
+            @RequestParam(value = "start", required = false) String start,
+            @RequestParam(value = "end", required = false) String end
 
     ) {
         if (dayAgo < 0) throw new BadRequestException("param recent phải lớn hơn 0");
         if (dayAgo > 0)
             return analyticsService.getRevenueRecent(dayAgo);
-        if (year == null)
-            year = LocalDate.now().getYear();
-        if (month == null) {
+        if (year != null)
             return analyticsService.getRevenueByYear(year);
-        }
-        return analyticsService.getRevenueByMonthAndYear(month, year);
+        return analyticsService.getRevenueBetween(start, end);
     }
 
     @GetMapping("/menu")
     public List<Object[]> getTopMenu(
             @RequestParam(value = "recent", defaultValue = "1") int dayAgo,
-            @RequestParam(value = "top", defaultValue = "3") int top,
-            @RequestParam(value = "type") String type
-
+            @RequestParam(value = "top", defaultValue = "50") int top,
+            @RequestParam(value = "type") String type,
+            @RequestParam(value = "start", required = false) String start,
+            @RequestParam(value = "end", required = false) String end
     ) {
         if ("sale".equals(type))
             return analyticsService.getTopMenuSelling(dayAgo, top);
         else if ("count".equals(type))
             return analyticsService.getTopCountOfMenuSelling(dayAgo, top);
+        else if ("all".equals(type))
+            return analyticsService.getTopMenu(start, end, top);
         else
-            throw new BadRequestException("param type must be `sale` or `count`");
+            throw new BadRequestException("param type must be `sale` or `count` or `all`");
     }
 
 }

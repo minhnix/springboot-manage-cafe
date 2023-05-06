@@ -33,6 +33,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
@@ -128,10 +129,14 @@ public class OrderService {
                 orders.getSize(), orders.getTotalElements(), orders.getTotalPages(), orders.isLast());
     }
 
-    public PagedResponse<OrderResponse> getAllByCreateAt(int page, int size, String sortBy, String sortDir, Long userId) {
+    public PagedResponse<OrderResponse> getAllByCreateAt(int page, int size, Long userId) {
         ValidatePageable.invoke(page, size);
 
-        Sort sort = (sortDir.equalsIgnoreCase("des")) ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
+        List<Sort.Order> order = new ArrayList<>();
+        order.add(new Sort.Order(Sort.Direction.ASC, "status"));
+        order.add(new Sort.Order(Sort.Direction.DESC, "createdAt"));
+
+        Sort sort = Sort.by(order);
         Pageable pageable = PageRequest.of(page, size, sort);
         Page<Order> orders = orderRepo.findAllByCreatedBy(pageable, userId);
 
@@ -143,10 +148,14 @@ public class OrderService {
                 orders.getSize(), orders.getTotalElements(), orders.getTotalPages(), orders.isLast());
     }
 
-    public PagedResponse<OrderResponse> getAllByStaffId(int page, int size, String sortBy, String sortDir, Long staffId) {
+    public PagedResponse<OrderResponse> getAllByStaffId(int page, int size, Long staffId) {
         ValidatePageable.invoke(page, size);
 
-        Sort sort = (sortDir.equalsIgnoreCase("des")) ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
+        List<Sort.Order> order = new ArrayList<>();
+        order.add(new Sort.Order(Sort.Direction.ASC, "status"));
+        order.add(new Sort.Order(Sort.Direction.DESC, "createdAt"));
+
+        Sort sort = Sort.by(order);
         Pageable pageable = PageRequest.of(page, size, sort);
         Page<Order> orders = orderRepo.findByStaffId(pageable, staffId);
 

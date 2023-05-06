@@ -1,5 +1,6 @@
 package com.nix.managecafe.controller;
 
+import com.nix.managecafe.exception.AuthenticationException;
 import com.nix.managecafe.model.Order;
 import com.nix.managecafe.model.enumname.StatusName;
 import com.nix.managecafe.payload.request.OrderRequest;
@@ -27,6 +28,7 @@ public class OrderController {
 
     @GetMapping("/{orderId}")
     public OrderResponse getOne(@PathVariable("orderId") Long orderId, @CurrentUser UserPrincipal userPrincipal) {
+        if (userPrincipal == null) throw new AuthenticationException("Full authentication to get resource");
         return orderService.getOne(orderId, userPrincipal);
     }
 

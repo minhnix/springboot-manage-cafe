@@ -23,13 +23,11 @@ import java.util.List;
 public class AnalyticsService {
     private final PurchaseOrderRepo purchaseOrderRepo;
     private final OrderRepo orderRepo;
-    private final EntityManager entityManager;
     private final Logger logger = LoggerFactory.getLogger(AnalyticsService.class);
 
-    public AnalyticsService(PurchaseOrderRepo purchaseOrderRepo, OrderRepo orderRepo, EntityManager entityManager) {
+    public AnalyticsService(PurchaseOrderRepo purchaseOrderRepo, OrderRepo orderRepo) {
         this.purchaseOrderRepo = purchaseOrderRepo;
         this.orderRepo = orderRepo;
-        this.entityManager = entityManager;
     }
 
     public ProfitResponse getProfit(String startDateString, String endDateString) {
@@ -62,6 +60,27 @@ public class AnalyticsService {
         profitResponse.setEndDate(endDate);
         profitResponse.setStartDate(startDate);
         return profitResponse;
+    }
+
+    public List<Object[]> getRevenueBetween(String startDateString, String endDateString) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDateTime startDate, endDate;
+        try {
+            if (startDateString != null && !startDateString.isBlank()) {
+                startDate = LocalDate.parse(startDateString, formatter).atStartOfDay();
+            } else {
+                startDate = LocalDateTime.of(2000, 1, 1, 0, 0, 0);
+            }
+            if (endDateString != null && !endDateString.isBlank()) {
+                endDate = LocalDate.parse(endDateString, formatter).atTime(LocalTime.MAX);
+            } else {
+                endDate = LocalDateTime.now();
+            }
+        } catch (DateTimeParseException ex) {
+            throw new BadRequestException("Lỗi định dạng ngày tháng (yyyy-MM-dd)");
+        }
+        ValidateDate.invoke(startDate, endDate);
+        return orderRepo.getRevenueBetween(startDate, endDate);
     }
 
     public List<Object[]> getRevenueByMonthAndYear(int month, int year) {
@@ -101,5 +120,26 @@ public class AnalyticsService {
         LocalDateTime startDate = LocalDateTime.now().minusDays(dayAgo);
         LocalDateTime endDate = LocalDateTime.now();
         return orderRepo.getMenuTopCount(startDate, endDate, top);
+    }
+
+    public List<Object[]> getTopMenu(String startDateString, String endDateString, int top) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDateTime startDate, endDate;
+        try {
+            if (startDateString != null && !startDateString.isBlank()) {
+                startDate = LocalDate.parse(startDateString, formatter).atStartOfDay();
+            } else {
+                startDate = LocalDateTime.of(2000, 1, 1, 0, 0, 0);
+            }
+            if (endDateString != null && !endDateString.isBlank()) {
+                endDate = LocalDate.parse(endDateString, formatter).atTime(LocalTime.MAX);
+            } else {
+                endDate = LocalDateTime.now();
+            }
+        } catch (DateTimeParseException ex) {
+            throw new BadRequestException("Lỗi định dạng ngày tháng (yyyy-MM-dd)");
+        }
+        ValidateDate.invoke(startDate, endDate);
+        return orderRepo.getTopMenu(startDate, endDate, top);
     }
 }

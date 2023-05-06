@@ -40,7 +40,7 @@ public interface OrderRepo extends JpaRepository<Order, Long> {
 
     long countByCreatedAtBetweenAndStatus(LocalDateTime startDate, LocalDateTime endDate, String status);
 
-    @Query(value = "Select SUM(total) FROM ( " +
+    @Query(value = "Select COALESCE(SUM(total), 0) FROM ( " +
             "            SELECT SUM(d.cost * d.quantity) + o.delivery_cost - o.amount_discount as total from orders o join order_details as d on o.id = d.order_id " +
             "            where o.created_at between ?1 and ?2 and o.status = 'PAID' " +
             "            group by o.id " +
@@ -107,4 +107,23 @@ public interface OrderRepo extends JpaRepository<Order, Long> {
             nativeQuery = true
     )
     List<Object[]> getRevenueByYear(@Param("year") int year);
+    @Query(value = " select date ,SUM(total) from ( " +
+            "select Date (o.created_at) as date, SUM(d.cost * d.quantity) + o.delivery_cost - o.amount_discount as total " +
+            "from orders o  " +
+            "left join order_details d on d.order_id = o.id " +
+            "where o.created_at between :start and :end " +
+            "and o.status = 'PAID' " +
+            "group by Date(o.created_at), o.id " +
+            "order by Date(o.created_at) " +
+            ") as temp " +
+            "group by date",
+            nativeQuery = true
+    )
+    List<Object[]> getRevenueBetween(@Param("start") LocalDateTime startDate, @Param("end") LocalDateTime endDate);
+    @Query(value = "select d.menu.name, SUM (d.quantity) as sl, SUM(d.quantity * d.cost) as revenue from Order o left join OrderDetail d on d.order.id = o.id where " +
+            "o.createdAt between :start and :end " +
+            "and o.status = 'PAID' " +
+            "group by d.menu.id " +
+            "order by revenue desc, sl desc limit :top")
+    List<Object[]> getTopMenu(@Param("start") LocalDateTime startDate, @Param("end") LocalDateTime endDate, @Param("top") int top);
 }
