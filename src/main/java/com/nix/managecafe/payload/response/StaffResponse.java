@@ -18,6 +18,7 @@ public class StaffResponse {
     private String firstname;
     private String lastname;
     private String email;
+    private String phoneNumber;
     private Long salary;
     private LocalDate startDate;
 }

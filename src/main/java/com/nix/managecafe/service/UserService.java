@@ -88,7 +88,7 @@ public class UserService {
     }
 
 
-    @Transactional
+    @Transactional(rollbackFor = {ResourceNotFoundException.class})
     @CacheEvict(value = "usersById")
     public void deleteByUserId(Long id) {
         User user = userRepo.findById(id)

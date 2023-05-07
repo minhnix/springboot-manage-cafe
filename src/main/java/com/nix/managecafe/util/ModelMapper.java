@@ -142,6 +142,7 @@ public class ModelMapper {
         staffResponse.setFirstname(timeSheet.getUser().getFirstname());
         staffResponse.setUsername(timeSheet.getUser().getUsername());
         staffResponse.setUserId(timeSheet.getUser().getId());
+        staffResponse.setPhoneNumber(timeSheet.getUser().getPhoneNumber());
         staffResponse.setSalary(timeSheet.getSalary());
         staffResponse.setShiftId(timeSheet.getShift().getId());
         staffResponse.setShift(timeSheet.getShift().getName());
