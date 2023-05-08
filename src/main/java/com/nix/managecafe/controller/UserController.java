@@ -112,17 +112,6 @@ public class UserController {
         return new ResponseEntity<>(new ApiResponse(true, "Password updated"), HttpStatus.OK);
     }
 
-    //TODO forgot password with no token
-    @PutMapping("/reset-password")
-    public ResponseEntity<ApiResponse> resetPassword(@CurrentUser UserPrincipal userPrincipal) {
-        try {
-            userService.sendResetPasswordEmail(userPrincipal.getUser());
-        } catch (MessagingException | UnsupportedEncodingException e) {
-            return new ResponseEntity<>(new ApiResponse(false, e.getMessage()), HttpStatus.BAD_REQUEST);
-        }
-        return new ResponseEntity<>(new ApiResponse(true, "Reset password"), HttpStatus.OK);
-    }
-
     @GetMapping("/me/orders")
     public PagedResponse<OrderResponse> getAllOrder(@CurrentUser UserPrincipal userPrincipal,
                                                     @RequestParam(value = "page", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) int page,

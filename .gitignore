@@ -6,6 +6,8 @@ target/
 
 images
 
+src/main/resources/application-secret.properties
+
 ### STS ###
 .apt_generated
 .classpath

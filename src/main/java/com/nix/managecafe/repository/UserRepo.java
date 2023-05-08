@@ -23,6 +23,7 @@ public interface UserRepo extends JpaRepository<User, Long> {
     @EntityGraph(attributePaths = {"roles", "address"})
     @Cacheable("usersById")
     Optional<User> findById(Long id);
+    Optional<User> findByEmail(String email);
 
     Optional<User> findByUsername(String username);
 

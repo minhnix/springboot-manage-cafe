@@ -21,6 +21,7 @@ import com.nix.managecafe.util.ValidatePageable;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.data.domain.Page;
@@ -46,6 +47,8 @@ public class UserService {
     private final JavaMailSender mailSender;
     private final TimeSheetRepo timeSheetRepo;
     private final OrderRepo orderRepo;
+    @Value("${spring.mail.username}")
+    private String fromAddress;
 
     Logger logger = LoggerFactory.getLogger(UserService.class);
 
@@ -174,9 +177,9 @@ public class UserService {
         }
     }
     @Transactional(rollbackFor = {MessagingException.class, UnsupportedEncodingException.class})
-    public void sendResetPasswordEmail(User user) throws MessagingException, UnsupportedEncodingException {
+    public void sendResetPasswordEmail(String email) throws MessagingException, UnsupportedEncodingException {
+        User user = userRepo.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("User", "email", email));
         String toAddress = user.getEmail();
-        String fromAddress = "bhminh322@gmail.com";
         String senderName = "NIX";
         String subject = "Reset password";
         String content = "Dear [[name]],<br>"

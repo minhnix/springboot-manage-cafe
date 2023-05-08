@@ -8,6 +8,7 @@ import com.nix.managecafe.payload.response.ApiResponse;
 import com.nix.managecafe.payload.response.JwtAuthenticationResponse;
 import com.nix.managecafe.security.JwtTokenProvider;
 import com.nix.managecafe.service.UserService;
+import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,13 +17,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 
 @RestController
@@ -64,5 +63,15 @@ public class AuthController {
                 .buildAndExpand(user.getUsername()).toUri();
 
         return ResponseEntity.created(location).body(new ApiResponse(true, "User registered successfully"));
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<ApiResponse> resetPassword(@RequestParam("email") String email) {
+        try {
+            userService.sendResetPasswordEmail(email);
+        } catch (MessagingException | UnsupportedEncodingException e) {
+            return new ResponseEntity<>(new ApiResponse(false, e.getMessage()), HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(new ApiResponse(true, "Password reset email has been sent to you"), HttpStatus.OK);
     }
 }
