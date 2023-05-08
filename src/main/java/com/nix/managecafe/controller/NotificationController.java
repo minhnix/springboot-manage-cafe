@@ -69,9 +69,9 @@ public class NotificationController {
         notificationService.changeAllToRead(userPrincipal.getId());
     }
     @PutMapping("/api/v1/notification/{id}")
-    public void changeNotificationToRead(@PathVariable("id") Long id, @CurrentUser UserPrincipal userPrincipal) {
+    public Notification changeNotificationToRead(@PathVariable("id") Long id, @CurrentUser UserPrincipal userPrincipal) {
         if (userPrincipal == null) throw new AuthenticationException("Full authentication to get resource");
-        notificationService.changeToRead(id, userPrincipal);
+        return notificationService.changeToRead(id, userPrincipal);
     }
 
     //user send to system

@@ -285,8 +285,6 @@ public class OrderService {
             if (warehouse.getQuantity() >= value) {
                 warehouse.setQuantity(warehouse.getQuantity() - value);
             } else {
-                order.setStatus(StatusName.FAILED);
-                orderRepo.save(order);
                 throw new BadRequestException("Không đủ nguyên liệu");
             }
             warehouseRepo.save(warehouse);
@@ -294,6 +292,20 @@ public class OrderService {
         order.setStaff(currentUser.getUser());
         order.setStaffFullName(currentUser.getUser().getLastname() + " " + currentUser.getUser().getFirstname());
         order.setStatus(StatusName.DELIVERING);
+        return ModelMapper.mapOrderToOrderResponse(orderRepo.save(order));
+    }
+
+    public OrderResponse cancelOrder(Long orderId, UserPrincipal currentUser) {
+        Order order = orderRepo.findById(orderId).orElseThrow(() -> new ResourceNotFoundException("Order", "id", orderId));
+        if (order.getStatus().equals(StatusName.PAID))
+            throw new BadRequestException("Đơn hàng này đã thanh toán. Bạn không thể huỷ!!!");
+        if (order.getStatus().equals(StatusName.DELIVERING))
+            throw new BadRequestException("Đơn hàng này đã nhận. Bạn không thể huỷ!!!");
+        if (order.getStatus().equals(StatusName.FAILED))
+            throw new BadRequestException("Đơn hàng này đã huỷ trước đó!");
+        order.setStaff(currentUser.getUser());
+        order.setStaffFullName(currentUser.getUser().getLastname() + " " + currentUser.getUser().getFirstname());
+        order.setStatus(StatusName.FAILED);
         return ModelMapper.mapOrderToOrderResponse(orderRepo.save(order));
     }
 

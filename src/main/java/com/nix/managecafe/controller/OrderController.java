@@ -100,6 +100,11 @@ public class OrderController {
     public OrderResponse receive(@PathVariable("orderId") Long orderId, @CurrentUser UserPrincipal currentUser) {
         return orderService.receiveOrder(orderId, currentUser);
     }
+    @PreAuthorize("hasAnyRole('STAFF', 'ADMIN', 'CUSTOMER')")
+    @PatchMapping("/{orderId}/cancel")
+    public OrderResponse cancelOrder(@PathVariable("orderId") Long orderId, @CurrentUser UserPrincipal currentUser) {
+        return orderService.cancelOrder(orderId, currentUser);
+    }
 
     @GetMapping("/amount")
     @PreAuthorize("hasRole('ADMIN')")
@@ -111,3 +116,4 @@ public class OrderController {
         return orderService.getAmountOfOrder(status, start, end);
     }
 }
+//TODO: Cancel order

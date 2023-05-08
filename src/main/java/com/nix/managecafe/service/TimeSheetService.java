@@ -124,7 +124,7 @@ public class TimeSheetService {
             if (endDateString != null && !endDateString.isBlank()) {
                 endDate = LocalDate.parse(endDateString, formatter);
             } else {
-                endDate = LocalDate.now();
+                endDate = LocalDate.of(LocalDate.now().getYear() + 1, 11, 1);
             }
         } catch (DateTimeParseException ex) {
             throw new BadRequestException("Lỗi định dạng ngày tháng (yyyy-MM-dd)");
