@@ -21,7 +21,6 @@ import com.nix.managecafe.util.ValidatePageable;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.data.domain.Page;
@@ -44,19 +43,16 @@ public class UserService {
     private final UserRepo userRepo;
     private final RoleRepo roleRepo;
     private final PasswordEncoder passwordEncoder;
-    private final JavaMailSender mailSender;
     private final TimeSheetRepo timeSheetRepo;
     private final OrderRepo orderRepo;
-    @Value("${spring.mail.username}")
-    private String fromAddress;
-
+    private final EmailSender emailSender;
     Logger logger = LoggerFactory.getLogger(UserService.class);
 
-    public UserService(UserRepo userRepo, RoleRepo roleRepo, PasswordEncoder passwordEncoder, JavaMailSender mailSender, TimeSheetRepo timeSheetRepo, OrderRepo orderRepo) {
+    public UserService(UserRepo userRepo, RoleRepo roleRepo, PasswordEncoder passwordEncoder, TimeSheetRepo timeSheetRepo, OrderRepo orderRepo, EmailSender emailSender) {
         this.userRepo = userRepo;
         this.roleRepo = roleRepo;
         this.passwordEncoder = passwordEncoder;
-        this.mailSender = mailSender;
+        this.emailSender = emailSender;
         this.timeSheetRepo = timeSheetRepo;
         this.orderRepo = orderRepo;
     }
@@ -68,6 +64,10 @@ public class UserService {
 
         if (userRepo.existsByEmail(signUpRequest.getEmail())) {
             throw new BadRequestException("Email Address already in use!!!");
+        }
+
+        if (userRepo.existsByPhoneNumber(signUpRequest.getPhoneNumber())) {
+            throw new BadRequestException("Phone Number already in use!!!");
         }
 
         User user = new User(signUpRequest.getUsername(),
@@ -180,25 +180,16 @@ public class UserService {
     public void sendResetPasswordEmail(String email) throws MessagingException, UnsupportedEncodingException {
         User user = userRepo.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("User", "email", email));
         String toAddress = user.getEmail();
-        String senderName = "NIX";
+        String senderName = "DUT Milk Tea";
         String subject = "Reset password";
         String content = "Dear [[name]],<br>"
                 + "New password: [[password]]<br>"
-                + "NIX.";
-
-        MimeMessage message = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message);
-
-        helper.setFrom(fromAddress, senderName);
-        helper.setTo(toAddress);
-        helper.setSubject(subject);
-
+                + "DUT Milk Tea.";
         String password = RandomStringUtils.randomAlphanumeric(10);
         content = content.replace("[[name]]", user.getUsername());
         content = content.replace("[[password]]", password);
-        helper.setText(content, true);
-        mailSender.send(message);
 
+        emailSender.sendTo(toAddress, senderName, subject, content);
         user.setPassword(passwordEncoder.encode(password));
         userRepo.save(user);
     }

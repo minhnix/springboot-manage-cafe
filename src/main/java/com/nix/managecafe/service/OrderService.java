@@ -20,6 +20,8 @@ import com.nix.managecafe.util.AppConstants;
 import com.nix.managecafe.util.ModelMapper;
 import com.nix.managecafe.util.ValidateDate;
 import com.nix.managecafe.util.ValidatePageable;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -45,12 +47,16 @@ public class OrderService {
     private final OrderDetailService orderDetailService;
     private final MenuDetailRepo menuDetailRepo;
     private final WarehouseRepo warehouseRepo;
+    private final EmailSender emailSender;
+    private final EntityManager entityManager;
 
-    public OrderService(OrderRepo orderRepo, OrderDetailService orderDetailService, MenuDetailRepo menuDetailRepo, WarehouseRepo warehouseRepo) {
+    public OrderService(OrderRepo orderRepo, OrderDetailService orderDetailService, MenuDetailRepo menuDetailRepo, WarehouseRepo warehouseRepo, EmailSender emailSender, EntityManager entityManager) {
         this.orderRepo = orderRepo;
         this.orderDetailService = orderDetailService;
         this.menuDetailRepo = menuDetailRepo;
         this.warehouseRepo = warehouseRepo;
+        this.emailSender = emailSender;
+        this.entityManager = entityManager;
     }
 
 
