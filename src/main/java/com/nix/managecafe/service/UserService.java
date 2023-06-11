@@ -58,12 +58,13 @@ public class UserService {
     }
 
     public User createUser(SignUpRequest signUpRequest, RoleName roleName) {
-        if (userRepo.existsByUsername(signUpRequest.getUsername())) {
-            throw new BadRequestException("Username already in use!!!");
-        }
 
         if (userRepo.existsByEmail(signUpRequest.getEmail())) {
-            throw new BadRequestException("Email Address already in use!!!");
+            throw new BadRequestException("Email đã sử dụng!!!");
+        }
+
+        if (userRepo.existsByUsername(signUpRequest.getUsername())) {
+            throw new BadRequestException("Username already in use!!!");
         }
 
         if (userRepo.existsByPhoneNumber(signUpRequest.getPhoneNumber())) {
@@ -172,8 +173,10 @@ public class UserService {
             User user = userPrincipal.getUser();
             user.setPassword(passwordEncoder.encode(updatePasswordRequest.getNewPassword()));
             userRepo.save(user);
+        } else if (updatePasswordRequest.getOldPassword().equals(updatePasswordRequest.getNewPassword())) {
+            throw new BadRequestException("Mật khẩu mới trùng mật khẩu mới");
         } else {
-            throw new InvalidPasswordException(false, "Invalid old password!!");
+            throw new InvalidPasswordException(false, "Mật khẩu cũ không đúng");
         }
     }
     @Transactional(rollbackFor = {MessagingException.class, UnsupportedEncodingException.class})

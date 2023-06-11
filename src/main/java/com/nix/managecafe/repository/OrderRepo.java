@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Objects;
 
 public interface OrderRepo extends JpaRepository<Order, Long> {
-    Page<Order> findAllByStatus(Pageable pageable, String status);
+    Page<Order> findByStatus(Pageable pageable, String status);
 
     Page<Order> findAllByCreatedBy(Pageable pageable, Long userId);
 

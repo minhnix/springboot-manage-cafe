@@ -125,7 +125,7 @@ public class OrderService {
 
         Sort sort = (sortDir.equalsIgnoreCase("des")) ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
         Pageable pageable = PageRequest.of(page, size, sort);
-        Page<Order> orders = orderRepo.findAllByStatus(pageable, status);
+        Page<Order> orders = orderRepo.findByStatus(pageable, status);
 
         List<OrderResponse> orderResponses = orders.getContent().stream().map(
                 ModelMapper::mapOrderToOrderResponse
